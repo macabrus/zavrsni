@@ -1,0 +1,15 @@
+<html>
+
+  <body>
+    <h1>Blockchain node</h1>
+    <p></p>
+    <script>
+      fetch('/chain')
+        .then(r => r.json())
+        .then(json => {
+          document.querySelector('p').textContent = JSON.stringify(json)
+        })
+    </script>
+  </body>
+
+</html>
