@@ -7,12 +7,14 @@ from keystore import hash_str
 
 DB_NAME = 'chain.db'
 
+# name -> value | row mapping factory
 def dict_factory(cursor, row):
     d = {}
     for idx, col in enumerate(cursor.description):
         d[col[0]] = row[idx]
     return d
 
+# connection factory
 def conn():
     c = sqlite3.connect(DB_NAME)
     c.row_factory = dict_factory
@@ -22,11 +24,10 @@ def init_db():
     with conn() as db:
         db.execute('''
         CREATE TABLE IF NOT EXISTS block (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id INTEGER PRIMARY KEY,
             timestamp DATETIME,
             nonce INTEGER,
             previous_hash VARCHAR(64),
-            current_hash VARCHAR(64) NOT NULL,
             miner_dst VARCHAR(64)
         )''')
         db.execute('''
@@ -45,12 +46,17 @@ def init_db():
             address VARCHAR(64)
         )''')
 
+
 def reinit_db():
     with conn() as db:
         db.execute('DROP TABLE IF EXISTS block')
         db.execute('DROP TABLE IF EXISTS txn')
         db.execute('DROP TABLE IF EXISTS address')
     init_db()
+
+def get_pubkey(address):
+   with conn() as db:
+       return db.execute('SELECT * FROM address WHERE address = ?', (address,)).fetchone()
 
 def add_address(pubkey_pem):
     # hash a pubkey and that's the address
@@ -60,18 +66,16 @@ def add_address(pubkey_pem):
 
 # records mined block into blockchain on disk
 def add_block(block):
+    block_id = get_chain_len()
     with conn() as db:
         timestamp    = block['timestamp']
         nonce        = block['nonce']
         prev_hash    = block['previous_hash']
-        current_hash = block['current_hash']
         miner_dst    = block['miner_dst']
-        cur = db.cursor()
-        cur.execute(
-            'INSERT INTO block VALUES (?, ?, ?, ?, ?, ?)',
-            (None, timestamp, nonce, prev_hash, current_hash, miner_dst)
+        db.execute(
+            'INSERT INTO block VALUES (?, ?, ?, ?, ?)',
+            (block_id, timestamp, nonce, prev_hash, miner_dst)
         )
-        block_id = cur.lastrowid
         for t in block['transactions']:
             db.execute(
                 'INSERT INTO txn VALUES (?, ?, ?, ?, ?, ?)', 
@@ -92,6 +96,15 @@ def get_block(id):
         block_info['transactions'] = txns
         return block_info
 
+def get_last_block():
+    with conn() as db:
+        res = db.execute('SELECT MAX(id) as id FROM block').fetchone()
+    return get_block(res['id']) if res['id'] != None else None
+
+def get_chain_len():
+    with conn() as db:
+        return db.execute('SELECT COUNT(*) as len FROM block').fetchone()['len']
+
 def get_balance(address):
     with conn() as db:
         res = db.execute('''
@@ -109,13 +122,6 @@ def get_balance(address):
         res['address'] = address
         return res
 
-def add_txn(block_id, timestamp, src, dst, amount):
-    with conn() as db:
-        db.execute(
-            'INSERT INTO txn VALUES (?, ?, ?, ?, ?)',
-            (block_id, timestamp, src, dst, amount)
-        )
-
 if __name__ == '__main__':
     reinit_db()
 
@@ -124,17 +130,14 @@ if __name__ == '__main__':
     c = hash_str('c')
     d = hash_str('d')
 
-    print(get_balance(b))
-
     block1 = hash_str('block1')
     block2 = hash_str('block2')
     block3 = hash_str('block3')
 
-    id = add_block({
+    block = {
         'timestamp': datetime.now(),
         'nonce': 73485,
         'previous_hash': block1,
-        'current_hash': block2,
         'miner_dst': a,
         'transactions': [{ # self given block reward
             'timestamp': datetime.now(),
@@ -161,12 +164,16 @@ if __name__ == '__main__':
             'amount': 10,
             'signature': 'todo'
         }]
-    })
+    }
 
-    print(get_block(id))
+    id1 = add_block(block)
+    id2 = add_block(block)
+
     print(get_balance(a))
     print(get_balance(b))
     print(get_balance(c))
     print(get_balance(d))
+    print(f'chain length {get_chain_len()}')
+    print(f'last block id {get_last_block()["id"]}')
     # print(get_txn())
 

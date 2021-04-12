@@ -4,3 +4,4 @@ venv/
 **/store/
 **/*.db
 **/.*
+docs/out/
