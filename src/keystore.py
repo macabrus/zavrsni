@@ -24,7 +24,8 @@ def get_pub_key(name='default', dir='store'):
     return DSA.import_key(get_key(name=name, dir=dir)).publickey().export_key().decode('ascii')
 
 def sign(data, name='default', dir='store', encoding='ascii'):
-    hash_obj = SHA256.new(data.encode(encoding))
+    print(f"SIGNING PAYLOAD: {json.dumps(data, sort_keys=True)}")
+    hash_obj = SHA256.new(json.dumps(data, sort_keys=True).encode(encoding))
     signer = DSS.new(DSA.import_key(get_key(name=name, dir=dir)), 'fips-186-3')
     return signer.sign(hash_obj).hex()
 
@@ -34,6 +35,7 @@ def verify(data, signature, name='default', dir='store', encoding='ascii'):
 def verify_with(pubkey, data, signature, encoding='ascii'):
     if isinstance(data, dict):
         data = json.dumps(data, sort_keys=True)
+        print(f"PAYLOAD TO VERIFY: {data}")
     key_obj = DSA.import_key(pubkey.encode(encoding))
     verifier = DSS.new(key_obj, 'fips-186-3')
     hash_obj = SHA256.new(data.encode(encoding))

@@ -8,8 +8,10 @@
 \usepackage{amsmath}
 %\usepackage[chapter]{algorithm}
 %\usepackage{algorithmic}
-\usepackage[outputdir=out]{minted}
+% \usepackage[outputdir=out]{minted}
+\usepackage{minted}
 \usemintedstyle{borland}
+
 
 \begin{document}
 
@@ -34,11 +36,10 @@
 
 % =========================
 \chapter{Uvod}
-
-Uslijed procesa globalizacije sve se više javlja potreba univerzalnog monetarnog sustava koji bi zamijenio ili barem objedinio postojeće bankarske sustave. Zbog loše standardizacije te njene slabe primijene u praksi, javljaju se brojni problemi u poslovanjima banaka što značajno ograničava međunarodne transakcije. Proučit ćemo jedno moguće rješenje trenutnog problema - lanac stranica.
+Uslijed procesa globalizacije javlja se sve veća potreba za univerzalnim protokolom novca koji bi zamijenio ili barem objedinio postojeće lokalne bankarske sustave. Zbog loše standardizacije te njene slabe primijene u praksi, javljaju se brojni problemi u poslovanjima banaka što značajno smanjuje propusnost obrade transakcija. Također, mikrotransakcije osjetno su neisplative u sustavima koji imaju visoke naknade za prijenos. Motivirani tim činjenicama, proučit ćemo jedno moguće rješenje trenutnog problema - lanac stranica.
 
 \section{Koncept središnjeg autoriteta}
-Na najopćenitijoj razini, \textbf{središnji autoritet} opisuje agenciju ili organizaciju koja osigurava provođenje zakona na međunarodnoj razini. U ovom nas kontekstu konkretno zanima što taj pojam znači u računarstvu. To je najbolje demonstrirati primjerom koji je u ovoj domeni najčešće asociran sa ulogom središnjeg autoriteta: \textbf{Certifikatni autoritet} (engl. Certificate authority) - tvrtka koja se bavi potpisivanje SSL certifikata korištenih u HTTPS protokolu. Ona obavlja provjeru identiteta, odnosno njegovu asocijaciju sa certifikatom web poslužitelja drugih firmi koje žele zadobiti povjerenje od klijenata. \textbf{Povezivanjem identiteta fizičke osobe ili organizacije sa javnim ključem poslužitelja} osigurava odgovornost (liability) i neporecivost (non-repudiation) u komunikaciji korisnika sa tim poslužiteljem. Ključno je uočiti to svojstvo neporecivosti i povezanosti sa identitetom. Samu tajnost komunikacijskog kanala možemo osigurati i bez centralnog tijela (koristeći kriptografske metode za razmjenu ključeva), no ne možemo biti sigurni u identitet druge strane ako prolazimo nesigurnim komunikacijskim kanalom (bez prethodne fizičke interakcije). To je razlog zašto primjerice web preglednici moraju imati unaprijed ugrađene certifikate izdane od vršnih autoriteta (Root CA). Vršni izdavatelji certifikata mogu delegirati to pravo na podređene 'centralne autoritete' te tako nastaju \textbf{certifikatni lanci}. Aktualna specifikacija TLS 1.3 mehanizama nalazi se u RFC-8446.\\
+Na najopćenitijoj razini, \textbf{središnji autoritet} opisuje agenciju ili organizaciju koja osigurava provođenje zakona na međunarodnoj razini. U ovom nas kontekstu konkretno zanima što taj pojam znači u računarstvu. To je najbolje demonstrirati primjerom koji je u ovoj domeni najčešće asociran sa ulogom središnjeg autoriteta: \textbf{Certifikatni autoritet} (engl. Certificate authority) - tvrtka koja se bavi potpisivanje SSL certifikata korištenih u HTTPS protokolu. Ona obavlja provjeru identiteta, odnosno njegovu asocijaciju sa certifikatom web poslužitelja drugih firmi koje žele zadobiti povjerenje od klijenata. \textbf{Povezivanjem identiteta fizičke osobe ili organizacije sa javnim ključem poslužitelja} osigurava odgovornost (liability) i neporecivost (non-repudiation) u komunikaciji korisnika sa tim poslužiteljem. Ključno je uočiti to svojstvo neporecivosti i povezanosti sa identitetom. Samu tajnost komunikacijskog kanala možemo osigurati i bez centralnog tijela (koristeći kriptografske metode za razmjenu ključeva), no ne možemo biti sigurni u identitet druge strane ako prolazimo nesigurnim komunikacijskim kanalom (bez prethodne fizičke interakcije). To je razlog zašto primjerice web preglednici moraju imati unaprijed ugrađene certifikate izdane od vršnih autoriteta (Root CA). Vršni izdavatelji certifikata mogu delegirati to pravo na podređene 'centralne autoritete' te tako nastaju \textbf{certifikatni lanci}. Aktualna specifikacija TLS 1.3 mehanizama nalazi se u RFC-8446.
 
 
 \chapter{Elektronički novac}
@@ -46,17 +47,19 @@ Na najopćenitijoj razini, \textbf{središnji autoritet} opisuje agenciju ili or
 Pokazalo se da je u praksi novac najpraktičniji opće prihvaćeni oblik razmjene dobara u obliku trajnog zapisa (u fizičkom ili digitalnom obliku).
 
 \section{Postojeći sustavi novca}
-Tradicionalni bankarski sustavi zasnovani su na računalima poslužiteljima koji pohranjuju stanje sustava u relacijskim bazama podataka te upravljaju korisničkim sjednicama, obavljaju autentifikaciju i autorizaciju te barataju transakcijama i stanjima računa. Centralizirana priroda ovakvog sustava osigurava konzistentnost sustava kroz vrijeme, lakše atomične operacije prijenosa sredstava, ali ona ima i neke nedostatke. 
-	Naime, pošto ne postoji jedna globalna banka, nastaje problem kako se razmjenjuju sredstva na međunarodnoj razini. Kao primjer jednog rješenja tog problema valjalo bi spomenuti SWIFTNet mrežu. SWIFT je osnovan 1973. te je do danas prošao kroz brojne migracije protokola kako bi se od 2001. do 2004. migriralo sa zastarijelog X.25 mrežnog protokola na internet protokol (IP), a kao serijalizacijski format za razmjenu poruka koristi XML. Tada je nastao novi skup standarda (ISO 20022-1: 2004 i ISO 20022-2:2007, Financial services – Universal Financial Industry message scheme). Kasnije je ponovno nadograđivan te je danas on poznat pod nazivom SWIFTNet Phase 2. Taj bi sustav trebao olakšati i u konačnici potpuno standardizirati razmjenu financijskih poruka između banaka u svijetu. Važno je napomenuti da SWIFTNet ne služi za transakcije među bankama već za delegaciju poruka plaćanja lokalnom bankarskom sustavu pri međunarodnoj trgovini. \\
+Tradicionalni bankarski sustavi zasnovani su na računalima poslužiteljima koji pohranjuju stanje sustava u relacijskim bazama podataka te upravljaju korisničkim sjednicama, obavljaju autentifikaciju i autorizaciju te barataju transakcijama i stanjima računa. Centralizirana priroda ovakvog sustava osigurava konzistentnost sustava kroz vrijeme, lakše atomične operacije prijenosa sredstava, ali ona ima i neke nedostatke. \\
+Naime, pošto ne postoji jedna globalna banka, nastaje problem kako se razmjenjuju sredstva na međunarodnoj razini. Kao primjer jednog rješenja tog problema valjalo bi spomenuti SWIFTNet mrežu. SWIFT je osnovan 1973. te je do danas prošao kroz brojne migracije protokola kako bi se od 2001. do 2004. migriralo sa zastarijelog X.25 mrežnog protokola na internet protokol (IP), a kao serijalizacijski format za razmjenu poruka koristi XML. Tada je nastao novi skup standarda (ISO 20022-1: 2004 i ISO 20022-2:2007, Financial services – Universal Financial Industry message scheme). Kasnije je ponovno nadograđivan te je danas on poznat pod nazivom SWIFTNet Phase 2. Taj bi sustav trebao olakšati i u konačnici potpuno standardizirati razmjenu financijskih poruka između banaka u svijetu. Važno je napomenuti da SWIFTNet ne služi za transakcije među bankama već za delegaciju poruka plaćanja lokalnom bankarskom sustavu pri međunarodnoj trgovini. \\ 
 
-	Također poznato je da postoje i manje organizacije nalik na SWIFT na razini lokalnih organizacijskih jedinica u državama. Ukratko, većina banaka i dalje ima brojne domenski specifične servise i način funkcioniranja, no ide se prema implementiranju ovog standarda.\\
+Također poznato je da postoje i manje organizacije nalik na SWIFT na razini lokalnih organizacijskih jedinica u državama. Ukratko, većina banaka i dalje ima brojne domenski specifične servise i način funkcioniranja, no ide se prema implementiranju ovog standarda.
+
 \section{Problemi tradicionalnih bankarskih sustava}
 	
-	Može se zaključiti da je financijski sustav iznimno kompleksan, varijabilan i nestabilan kroz vrijeme zbog čestih promijena kako bi ostao u koraku sa tehnološkim napretkom. Postavlja se pitanje može li se sustav prijenosa financijskih sredstava pojednostaviti, a da zadržimo njegovu pouzdanost (ili ju čak i povećamo). \\
+Može se zaključiti da je financijski sustav iznimno kompleksan, varijabilan i nestabilan kroz vrijeme zbog čestih promijena kako bi ostao u koraku sa tehnološkim napretkom. Postavlja se pitanje može li se sustav prijenosa financijskih sredstava pojednostaviti, a da zadržimo njegovu pouzdanost (ili ju čak i povećamo). \\
 
-	Elektronički sustavi novca zahtijevaju visoku propusnost pri obradi upita, stalnu dostupnost, pouzdanost i otpornost na napade i zlonamjerne vanjske aktore. To su vrlo strogi zahtjevi za bilo koji sustav, a pogotovo za velike sustave koji u poslovnim procesima imaju ljudski faktor (velike birokratski aparat) jer su ljudi skloni pogreškama i nepoštivanju pravila. Osim toga, sama činjenica da je sustav centraliziran znači da postoji točka kvara i svi podređeni čvorovi prestaju funkcionirati što može uzrokovati ogromne štete. Na primjer, ako se sruši kritični bankovni poslužitelj, daljnje transakcije će biti onemogućene za sve korisnike te banke. \\
+Elektronički sustavi novca zahtijevaju visoku propusnost pri obradi upita, stalnu dostupnost, pouzdanost i otpornost na napade i zlonamjerne vanjske aktore. To su vrlo strogi zahtjevi za bilo koji sustav, a pogotovo za velike sustave koji u poslovnim procesima imaju ljudski faktor (velike birokratski aparat) jer su ljudi skloni pogreškama i nepoštivanju pravila. Osim toga, sama činjenica da je sustav centraliziran znači da postoji točka kvara i svi podređeni čvorovi prestaju funkcionirati što može uzrokovati ogromne štete. Na primjer, ako se sruši kritični bankovni poslužitelj, daljnje transakcije će biti onemogućene za sve korisnike te banke. \\
 
-	Drugo nepoželjni nusprodukt je potreba za hijerarhijom povjerenja. Naime, čvorovi mreže trebaju vjerovati nadležnima čvorovima te ukoliko je jedan kompromitiran cijelo podstablo takve strukture povjerenja je kompromitirano. Također, kompromis bilo koje financijske institucije u toj strukturi zahtjeva intervenciju pravnog sustava država.
+Drugo nepoželjni nusprodukt je potreba za hijerarhijom povjerenja. Naime, čvorovi mreže trebaju vjerovati nadležnima čvorovima te ukoliko je jedan kompromitiran cijelo podstablo takve strukture povjerenja je kompromitirano. Također, kompromis bilo koje financijske institucije u toj strukturi zahtjeva intervenciju pravnog sustava država. \\
+
 Stoga, želimo li koristiti usluge banaka, moramo vjerovati da će ispravno baratati našim financijskim sredstvima.
 Unatoč velikoj pouzdanosti, česti su primjeri zakazivanja centraliziranih sustava.
 
@@ -85,9 +88,9 @@ Kako bismo ju smatrali sigurnom ona mora zadovoljavati pružati sljedeće kvalit
 \chapter{Lanac stranica}
 Lanac stranica općeniti je naziv za jednu od metoda implementacije mreže ravnopravnih sudionika bez nadležnog autoriteta. 'Uloga' centralnog autoriteta se premješta na povjerenje u kriptografske metode koje su dokazivo pouzdane te ne sadržavaju ljudski faktor.
 
-Lanac stranica je metoda koja objedinjuje identitet sa samim kriptografskim ključem i time eliminira potrebu za središnjim autoritetom koji bi regulirao identitet. Suglasje oko globalnog stanja sustava postiže se glasanjem legitimnih\footnotemark čvorova mreže. (ono što vjeruje 51\% mreže to se smatra pravim stanjem).
+Lanac stranica je metoda koja objedinjuje identitet sa samim kriptografskim ključem i time eliminira potrebu za središnjim autoritetom koji bi regulirao identitet. Suglasje oko globalnog stanja sustava postiže se glasanjem legitimnih\footnotemark čvorova mreže. (ono što vjeruje većina čvorova mreže, smatra se pravim stanjem).
 
-Bitcoin, nesumnjivo vodeća kriptovaluta današnjice, najbolji je primjer implementacije protokola za digitalni novac temeljen na ideji lanca stranica. Objasnit ćemo ukratko ideju rada Bitcoina i njegovih ograničenja. Čvorovi Bitcoin mreže postižu suglasje takozvanim rudarenjem što je zapravo uzastopno ponavljanje operacija izračunavanja SHA-256 sažetka stranice (ledger-a) konkateniranog sa nekom vrijednosti koju rudar mora pronaći kako bi zadovoljio zahtjev mreže - a to je da konačni sažetak ima N vodećih 0-bitova. Broj N zove se težina (difficulty) te je on direktno povezan sa vjerojatnošću pronalaženja takvog sažetka. To se radi kako bi čvor koji uspješno pronađe taj sažetak mogao dokazati ostatku mreže da je on (u prosjeku) uložio vrijeme proporcionalno broju zahtjevanih vodećih nula. Ostatak mreže mu mora vjerovati jer ne postoji prečica kojom bi se predvidjela vrijednost funkcije sažetka bez da ju zapravo provedemo. Integritet Bitcoin lanca oslanja se na uvjerenje da je SHA-256 kriptografski sigurna funkcija sažetka.
+Bitcoin, nesumnjivo vodeća kriptovaluta današnjice, jedan je od jednostavnijih primjera implementacije protokola za digitalni novac temeljen na ideji lanca stranica. Objasnit ćemo ukratko ideju rada Bitcoina i njegova ograničenja. Čvorovi Bitcoin mreže postižu suglasje takozvanim rudarenjem što je zapravo uzastopno ponavljanje operacija izračunavanja SHA-256 sažetka stranice (ledger-a) konkateniranog sa nekom vrijednosti koju rudar mora pronaći kako bi zadovoljio zahtjev mreže - a to je da konačni sažetak ima N vodećih 0-bitova. Broj N zove se težina (difficulty) te je on direktno povezan sa vjerojatnošću pronalaženja takvog sažetka. To se radi kako bi čvor koji uspješno pronađe taj sažetak mogao dokazati ostatku mreže da je on (u prosjeku) uložio vrijeme proporcionalno broju zahtjevanih vodećih nula. Ostatak mreže mu mora vjerovati jer ne postoji prečica kojom bi se predvidjela vrijednost funkcije sažetka bez da ju zapravo provedemo. Integritet Bitcoin lanca oslanja se na uvjerenje da je SHA-256 kriptografski sigurna funkcija sažetka.
 
 \footnotetext{Legitimnim čvorom smatra se svaki čvor koji je kompatibilan sa specifikacijom sustava, odnosno poštuje sva pravila ispravne komunikacije sa drugim čvorovima (to ga i dalje ne sprečava da pokuša zlonamjerno komunicirati sa ostalim sudionicima)}
 
@@ -103,11 +106,31 @@ Bitcoin, nesumnjivo vodeća kriptovaluta današnjice, najbolji je primjer implem
 % =========================
 
 \section{Validacija transakcija digitalnim potpisima}
+Demonstrirajmo primjer kako bi Alice i Bob napravili transakciju na lancu stranica.
+\begin{enumerate}
+	\item Alice i Bob izgeneriraju kriptografske ključeve shemom digitalnog potpisa.
+	\item Alice izradi transakciju u kojoj navodi da šalje Bob-u određeni iznos novaca. Alice zatim potpiše tu izjavu (claim) svojim tajnim ključem te ju objavi u mrežu.
+	\item Čin objave transakcije je zapravo kontaktiranje čvorova u mreži koji se bave rudarenjem te se Alice-ina transakcija dodaje na listu nepotvrđenih transakcija\footnotemark.
+	\item Rudar će, iz prioritetnog reda sortiranog po veličini naknade za svoju uslugu\footnotemark uzimati transakcije i provjeriti njihovu ispravnost u bazi povijesti lanca stranica.
+	\item Ako je transakcija ispravna, rudar dodaje transakciju na sljedeću stranicu u lancu koju treba 'izrudariti'
+	\item Važeće transakcije spremaju se u binarno stablo gdje je roditeljski sažetak jednak sažetku oba sažetka djece. Takva struktura podataka olakšava izračunavanje SHA sažetka bez da moramo ponovno trošiti vrijeme na ponovno izračunavanje svih starih SHA-256 sažetaka prijašnjih transakcija u stablu koje stalno raste. Pri dodavanju novih transakcija moramo samo Ažurirati jednu granu u tom stablu.
+	\item U stranici postoji mjesto za poseban broj kojeg rudar traži tako da sažetak stranice zajedno sa njegovom odredišnom adresom gdje prima nagradu za stranicu.\footnotemark
+	\item Uslijed pronalaženja sažetka sa odgovarajućom zahtjevnošću, on objavljuje svoju stranicu susjednim čvorovima i na taj se način nova stranica propagira kroz mrežu.
+	\item Čvorovi koji još nisu čuli za novu stranicu, nastavljaju se natjecati s njom. Ukoliko dođe do istovremenog rudarenja više jednakovrijednih stranica na različitim računalima, onaj koji se uspije propagirati na više čvorova ima veće izglede da će izrudariti i sljedeću stranicu baziranu na toj stranici te time 'pobijediti'.\footnotemark
+\end{enumerate}
 
+\footnotetext{Unconfirmed transaction pool je bazen (prioritetni red nepotvrđenih transakcija koje se trebaju obraditi). On je sortiran tako da rudar iz njega uzima transakcije koje njemu donose najveći profit te ih validira i dodaje na popis u sljedeću stranicu koju treba izrudariti.}
+\footnotetext{Transaction fee je relativn mali iznos koji plaćamo rudaru za njegovu uslugu potvrđivanja naše transakcije kako bi on imao motivaciju raditi svoj posao}
+\footnotetext{Difficulty ili zahtjevnost mreže je broj vodećih 0-bitova koje sažetak lanca mora sadržavati}
+\footnotetext{Merkle tree ili u Ethereum mreži Patricia (prefix) trie je}
+\footnotetext{Orphaned block je stranica koja je odbačena zato jer je započela kraću granu u lancu, a prema suglasju mreže, uvijek moramo graditi na najduljem lancu jer je on autoritativan te prikazuje stvarno stanje mreže. Trasakcije na odbačenim stranicama postaju nevažeće. To je jedan od razloga zašto se savjetuje da se pričeka nekoliko blokova prije nego što se vjeruje posljednjoj izrudarenoj stranici}
 \section{Ispravnost tvrdnji u lancu stranica }
+Rudari moraju imati bazu povijesti lanca stranica \footnotemark 
+
+\footnotetext{ Takozvani Full node je čvor koji čuva arhivu povijesti cijelog lanca u svrhu validiranja ispravnosti budućih transakcija, čuvanje javnih ključeva drugih korisnika za provjeravanje i izračunavanje }
 
 \section{Dokaz rada}
-
+Dokaz rada je osmišljen kako bi se onemogućilo zlonamjernim čvorovima da razglasuju pogrešne informacije o stanju mreže (primjer: razglase da imaju više bitcoin-a u svom vlasništvu ili više puta potroše iste bitcoin-e koje posjeduju). Dokaz rada fizički onemogućava takve pokušaje varanja zato što bi za takvo što napadač morao imati većinu računalne snage u mreži što svakako nije slučaj. 
 
 % =========================
 \chapter{Simulacija}

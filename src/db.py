@@ -61,6 +61,8 @@ def get_pubkey(address):
 def add_address(pubkey_pem):
     # hash a pubkey and that's the address
     address = hash_str(pubkey_pem)
+    if get_pubkey(address):
+        return # we already have this address in DB
     with conn() as db:
         db.execute('INSERT INTO address VALUES (?, ?)', (pubkey_pem, address))
 
@@ -77,9 +79,10 @@ def add_block(block):
             (block_id, timestamp, nonce, prev_hash, miner_dst)
         )
         for t in block['transactions']:
+            tx_data = t['data']
             db.execute(
                 'INSERT INTO txn VALUES (?, ?, ?, ?, ?, ?)', 
-                (block_id, t['timestamp'], t['src'], t['dst'], t['amount'], t['signature'])
+                (block_id, t['timestamp'].isoformat(), tx_data['src'], tx_data['dst'], tx_data['amount'], t['signature'])
             )
     return block_id
 
@@ -93,8 +96,16 @@ def get_block(id):
             'SELECT * FROM txn WHERE block_id = ?',
             (id, )
         ).fetchall()
+        # for txn in txns:
+        #     txn['timestamp'] = txn['timestamp'].toisoformat()
         block_info['transactions'] = txns
         return block_info
+
+def get_chain():
+    chain = []
+    for i in range(get_chain_len()):
+        chain.append(get_block(i))
+    return chain
 
 def get_last_block():
     with conn() as db:

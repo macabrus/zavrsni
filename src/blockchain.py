@@ -2,12 +2,14 @@ import hashlib
 import json
 import random
 import db
+import keystore as ks 
 
 from datetime import datetime
 from time import time, sleep
 from urllib.parse import urlparse
 from uuid import uuid4
 from keystore import hash_str, get_key, sign, verify_with
+from functools import reduce
 
 import textwrap
 import requests
@@ -22,20 +24,26 @@ class Blockchain:
 
         # Create the genesis block
         self.new_block(previous_hash='0' * 64, nonce=0)
-
+    
+    # @property
+    # def chain(self):
+    #     return db.get_chain()
+        
     @property
     def last_block(self):
         """
         Last block persisted in database
         """
-        return db.get_last_block()
+        return self.chain[-1]
+        # return db.get_last_block()
     
     @property
     def last_block_id(self):
         """
         Last mined block's ID
         """
-        return self.last_block['id']
+        return self.chain[-1]['id']
+        # return self.last_block['id']
     
     @property
     def current_id(self):
@@ -46,7 +54,8 @@ class Blockchain:
     
     @property
     def chain_length(self):
-        return db.get_chain_len()
+        return len(self.chain)
+        # return db.get_chain_len()
     
     def new_block(self, nonce, previous_hash):
         """
@@ -58,7 +67,8 @@ class Blockchain:
         """
 
         block = {
-            'timestamp': datetime.now(),
+            'id': len(self.chain),
+            'timestamp': datetime.now().isoformat(),
             'transactions': self.current_transactions,
             'nonce': nonce,
             'miner_dst': node_identifier,
@@ -68,7 +78,9 @@ class Blockchain:
         # Reset the current list of transactions
         self.current_transactions = []
 
-        db.add_block(block)
+        # db.add_block(block)
+        self.chain.append(block)
+        print(json.dumps(self.chain, indent=2))
         return block
 
     def new_transaction(self, txn_dict):
@@ -80,10 +92,12 @@ class Blockchain:
         :param amount: Amount
         :return: The index of the Block that will hold this transaction
         """
-        txn_dict['timestamp'] = datetime.now()
+        txn_dict['timestamp'] = datetime.now().isoformat()
+        # remembering address if it's new
+        db.add_address(txn_dict['pub_key'])
         self.current_transactions.append(txn_dict)
-
-        return self.last_block['index'] + 1
+        
+        return self.last_block['id'] + 1
 
     @staticmethod
     def hash(block):
@@ -121,14 +135,14 @@ class Blockchain:
             start = time()
             print(f'trying nonce {nonce}')
             if self.valid_nonce(last_nonce, nonce, last_hash):
-                print(self.chain)
+                # print(self.chain)
                 break
             else:
                 nonce += 1
                 end = time()
                 to_sleep = 0.01 - (end - start)
-                if to_sleep > 0:
-                    sleep(to_sleep)
+                # if to_sleep > 0:
+                #     sleep(to_sleep)
 
         return nonce
 
@@ -157,6 +171,8 @@ class Blockchain:
         """
 
         parsed_url = urlparse(address)
+        if parsed_url.netloc in self.nodes or parsed_url.path in self.nodes:
+            return
         if parsed_url.netloc:
             self.nodes.add(parsed_url.netloc)
         elif parsed_url.path:
@@ -166,6 +182,7 @@ class Blockchain:
             raise ValueError('Invalid URL')
 
     # USED ONLY WHEN SYNCING...
+    # TODO: fix this
     # TODO: optimise method:
     #       instead of downloading whole peer blockchain,
     #       we should only iterate from tail backwards
@@ -245,6 +262,7 @@ class Blockchain:
 
 # Instantiate the Node
 app = Flask(__name__)
+app.config['TEMPLATES_AUTO_RELOAD'] = True
 
 @app.route('/mine', methods=['GET'])
 def mine():
@@ -252,15 +270,16 @@ def mine():
     last_block = blockchain.last_block
     nonce = blockchain.proof_of_work(last_block)
 
+    data = {
+        'src': None,
+        'dst': node_identifier,
+        'amount': 100
+    }
     # We must receive a reward for finding the nonce
     blockchain.new_transaction({
-        'data': {
-            'src': None,
-            'dst': node_identifier,
-            'amount': 1000
-        },
-        'signature': None,
-        'pub_key': None
+        'data': data,
+        'signature': sign(data, name=args.key),
+        'pub_key': ks.get_pub_key(name=args.key)
     })
 
     # Forge the new Block by adding it to the chain
@@ -296,34 +315,46 @@ def new_transaction():
     if not verify_with(body['pub_key'], body['data'], body['signature']):
         return jsonify({'message': 'Transaction signature invalid.'}), 400
     
-    # getting account balance from database
-    account_balance = db.get_balance(body['data']['src'])['balance']
-    # adding possible current block transactions
-    # related to this account
-    for txn in blockchain.current_transactions:
-        if body['src'] == txn['src']:
-            account_balance -= txn['amount']
-        if body['src'] == txn['dst']:
-            account_balance += txn['amount']
-
-    if account_balance < body['data']['amount']:
+    if get_account_balance(body['data']['src']) < body['data']['amount']:
         return jsonify({'message': 'Not enough funds on account'}), 400
 
-    
     # TODO: save pub_key to database and associate it with address
     #       if it is not already saved
 
     # add to unconfirmed transactions
-    index = blockchain.new_transaction({
-        'src': body['data']['src'],
-        'dst': body['data']['dst'],
-        'amount': body['data']['amount'],
-        'signature': body['signature']
-    })
+    index = blockchain.new_transaction(body)
 
     response = {'message': f'Transaction will be added to Block {index}'}
     return jsonify(response), 201
 
+def get_account_balance(address):
+    # getting account balance from database
+    # account_balance = db.get_balance(body['data']['src'])['balance']
+    account_balance = 0
+    # account_balance += len(b for b in blockchain.chain if b['miner_dst']) * 100
+    reduced = []
+    for block in blockchain.chain:
+        reduced.extend(block['transactions'])
+    for t in reduced:
+        if t['data']['src'] == address:
+            account_balance -= t['data']['amount']
+        elif t['data']['dst'] == address:
+            account_balance += t['data']['amount']
+    
+    # adding possible current block transactions
+    # related to this account
+    for txn in blockchain.current_transactions:
+        if address == txn['data']['src']:
+            account_balance -= txn['data']['amount']
+        if address == txn['data']['dst']:
+            account_balance += txn['data']['amount']
+    return account_balance
+
+@app.route('/pub_key', methods=['GET'])
+def get_pub_key():
+    res = db.get_pubkey(request.args.get('address'))
+    print(res)
+    return jsonify(res)
 
 @app.route('/txn', methods=['GET'])
 def list_unconfirmed_txns():
@@ -384,6 +415,19 @@ def reach_consensus():
 
     return jsonify(response), 200
 
+@app.route('/sign', methods=['POST'])
+def sign_payload():
+    return sign(request.get_json())
+
+@app.route('/node_id')
+def get_identifier():
+    global node_identifier
+    return node_identifier
+
+@app.route('/balance')
+def get_balance():
+    return jsonify({'balance': get_account_balance(request.args.get('address'))})
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -401,7 +445,7 @@ if __name__ == '__main__':
     db.reinit_db()
 
     # computed as hex decoded SHA256 hash of fips-186-3 DSS public key exported in string PEM format
-    node_identifier = hash_str(get_key(name=args.key))
+    node_identifier = hash_str(ks.get_pub_key(name=args.key))
     print(f'NODE_ID: {node_identifier}')
 
     # Instantiate the Blockchain
