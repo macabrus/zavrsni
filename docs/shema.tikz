@@ -1,0 +1,121 @@
+
+
+\tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt        
+
+\begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-1,xscale=1]
+%uncomment if require: \path (0,497); %set diagram left start at 0, and has height of 497
+
+%Shape: Rectangle [id:dp4321179914766464] 
+\draw   (6,386) -- (492,386) -- (492,474.5) -- (6,474.5) -- cycle ;
+%Shape: Rectangle [id:dp8872489473788213] 
+\draw   (157,413) -- (227,413) -- (227,453) -- (157,453) -- cycle ;
+%Straight Lines [id:da6623694321503638] 
+\draw    (192,413) -- (192,333.5) ;
+\draw [shift={(192,331.5)}, rotate = 450] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
+%Shape: Rectangle [id:dp19081926795582194] 
+\draw   (39,414) -- (109,414) -- (109,454) -- (39,454) -- cycle ;
+%Straight Lines [id:da07351744030248808] 
+\draw    (74,414) -- (74,334.5) ;
+\draw [shift={(74,332.5)}, rotate = 450] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
+%Shape: Rectangle [id:dp6447732440433431] 
+\draw   (275,413) -- (345,413) -- (345,453) -- (275,453) -- cycle ;
+%Straight Lines [id:da08996489921985373] 
+\draw    (310,413) -- (310,333.5) ;
+\draw [shift={(310,331.5)}, rotate = 450] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
+%Shape: Rectangle [id:dp35045307677532056] 
+\draw   (39,293) -- (109,293) -- (109,333) -- (39,333) -- cycle ;
+%Shape: Rectangle [id:dp10554006421694595] 
+\draw   (157,292) -- (227,292) -- (227,332) -- (157,332) -- cycle ;
+%Shape: Rectangle [id:dp5131724308650354] 
+\draw   (275,291) -- (345,291) -- (345,331) -- (275,331) -- cycle ;
+%Shape: Rectangle [id:dp6283638134506683] 
+\draw   (387,413) -- (457,413) -- (457,453) -- (387,453) -- cycle ;
+%Straight Lines [id:da030731226630209663] 
+\draw    (422,413) -- (422,333.5) ;
+\draw [shift={(422,331.5)}, rotate = 450] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
+%Shape: Rectangle [id:dp9520395935308572] 
+\draw   (387,291) -- (457,291) -- (457,331) -- (387,331) -- cycle ;
+%Shape: Rectangle [id:dp8077340163423831] 
+\draw   (81,211) -- (206,211) -- (206,251) -- (81,251) -- cycle ;
+%Straight Lines [id:da4393123411447112] 
+\draw    (75,294) -- (117.59,250.92) ;
+\draw [shift={(119,249.5)}, rotate = 494.68] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
+%Straight Lines [id:da6905852604893123] 
+\draw    (191,291.5) -- (148.46,251.86) ;
+\draw [shift={(147,250.5)}, rotate = 402.98] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
+%Shape: Rectangle [id:dp9330661027381227] 
+\draw   (310,211) -- (433,211) -- (433,251) -- (310,251) -- cycle ;
+%Straight Lines [id:da647758351674839] 
+\draw    (309,292) -- (348.58,252.91) ;
+\draw [shift={(350,251.5)}, rotate = 495.35] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
+%Straight Lines [id:da48415803839754723] 
+\draw    (420,291) -- (387.3,253.02) ;
+\draw [shift={(386,251.5)}, rotate = 409.28] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
+%Shape: Rectangle [id:dp16929651221601583] 
+\draw   (131,128) -- (350,128) -- (350,168) -- (131,168) -- cycle ;
+%Straight Lines [id:da6737546570402214] 
+\draw    (134,212) -- (216.22,170.4) ;
+\draw [shift={(218,169.5)}, rotate = 513.1600000000001] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
+%Straight Lines [id:da5027553081138414] 
+\draw    (367,211) -- (270.84,170.28) ;
+\draw [shift={(269,169.5)}, rotate = 382.95] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
+%Shape: Rectangle [id:dp5600508754383059] 
+\draw   (131,45.5) -- (350,45.5) -- (350,168) -- (131,168) -- cycle ;
+%Shape: Rectangle [id:dp41245370653393054] 
+\draw   (131,45.5) -- (350,45.5) -- (350,85.5) -- (131,85.5) -- cycle ;
+%Curve Lines [id:da0041357615969599415] 
+\draw    (21,150.5) .. controls (131.45,155.97) and (21.11,46.6) .. (129.35,59.3) ;
+\draw [shift={(131,59.5)}, rotate = 187.19] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
+%Curve Lines [id:da26642107281708394] 
+\draw    (566,121.5) .. controls (624.41,121.5) and (575.99,64.16) .. (633.23,61.56) ;
+\draw [shift={(635,61.5)}, rotate = 538.5699999999999] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
+%Rounded Rect [id:dp045619355532657946] 
+\draw   (402,100.5) .. controls (402,95.25) and (406.25,91) .. (411.5,91) -- (557.5,91) .. controls (562.75,91) and (567,95.25) .. (567,100.5) -- (567,129) .. controls (567,134.25) and (562.75,138.5) .. (557.5,138.5) -- (411.5,138.5) .. controls (406.25,138.5) and (402,134.25) .. (402,129) -- cycle ;
+%Curve Lines [id:da13309486554182137] 
+\draw    (345,33) .. controls (393,29.5) and (343,116.5) .. (401,113.5) ;
+%Curve Lines [id:da10324455292651535] 
+\draw    (347,185.5) .. controls (395,182) and (343,116.5) .. (401,113.5) ;
+
+% Text Node
+\draw (192,433) node   [align=left] {\begin{minipage}[lt]{10.65pt}\setlength\topsep{0pt}
+B
+\end{minipage}};
+% Text Node
+\draw (74,434) node   [align=left] {\begin{minipage}[lt]{10.65pt}\setlength\topsep{0pt}
+A
+\end{minipage}};
+% Text Node
+\draw (310,433) node   [align=left] {\begin{minipage}[lt]{10.65pt}\setlength\topsep{0pt}
+C
+\end{minipage}};
+% Text Node
+\draw (57,305) node [anchor=north west][inner sep=0.75pt]   [align=left] {H(A)};
+% Text Node
+\draw (175,304) node [anchor=north west][inner sep=0.75pt]   [align=left] {H(B)};
+% Text Node
+\draw (293,303) node [anchor=north west][inner sep=0.75pt]   [align=left] {H(C)};
+% Text Node
+\draw (422,433) node   [align=left] {\begin{minipage}[lt]{10.65pt}\setlength\topsep{0pt}
+D
+\end{minipage}};
+% Text Node
+\draw (405,303) node [anchor=north west][inner sep=0.75pt]   [align=left] {H(D)};
+% Text Node
+\draw (87,222) node [anchor=north west][inner sep=0.75pt]   [align=left] {H(H(A) || H(B))};
+% Text Node
+\draw (316,222) node [anchor=north west][inner sep=0.75pt]   [align=left] {H(H(A) || H(B))};
+% Text Node
+\draw (200,140) node [anchor=north west][inner sep=0.75pt]    {$H( H_{1} \ ||\ H_{2})$};
+% Text Node
+\draw (204,99) node [anchor=north west][inner sep=0.75pt]   [align=left] {n-ta stranica};
+% Text Node
+\draw (184,53) node [anchor=north west][inner sep=0.75pt]   [align=left] {H((n-1)-te stranice)};
+% Text Node
+\draw (412,107) node [anchor=north west][inner sep=0.75pt]    {$H( n-ta\ stranica)$};
+% Text Node
+\draw (643,48) node [anchor=north west][inner sep=0.75pt]   [align=left] {...};
+% Text Node
+\draw (506,426) node [anchor=north west][inner sep=0.75pt]   [align=left] {Transakcije};
+
+
+\end{tikzpicture}

@@ -1,0 +1,10 @@
+{
+  "data": {
+    "amount": 100,
+    "block_index": 1,
+    "dst": "put_address_here",
+    "src": "8ec66d8c7ceeb0ee6e545826392c408a3e37745b073837cca4b817b1cd826029"
+  },
+  "pub_key": "-----BEGIN PUBLIC KEY-----\nMIIBtzCCASwGByqGSM44BAEwggEfAoGBANBq6BJU15duA0LMNQBaGv4sO0HwwBwi\nz12BwJAnxQe/JBgsecXb4skjuWkMVSAfXtiXgXfzFBc2dyANfZNIZVrk384oo5L2\nv6jOZWGOg1vfoh3y5qlDSAU0jGLhrbMhm+BtvsGvY1IA85KI2H4pHHxe3XZvvwZ7\n9aB3jAu6lLAzAhUAtvvqJ2g7vF+zWL85FdSc4t7mV0MCgYEAkwBkk/v9VudsRV7X\nGaeEBtzfvfflEY13V90r5nn+7NSqq8+w92RviBchagbtJbiOBaQOioUMElwHctBK\n5uxUyO5WAiaIhp2RgryQGwnloCrUi3NfFoK0+sRCuLkZGs2lMtV+cLUKOdydnTic\n+iNajA3SGXcbK1aRLtnm3rbUGqsDgYQAAoGACO7gRQANKhscc5ZnNsgOO4UDYZlq\nR8Zp7E+3h0IwvKv2cefLDZzTM4q5TBhi1gUiuCoBSwAwaEcjscZO17ppYc9GA6B0\nP/5/ifXzguWwzcbU0pbOugJVVmG6uGg6wMMcoqBJg2gcwCe8zDNRLQCbsHZe7V44\nMDAEM7fpCgJ0VTg=\n-----END PUBLIC KEY-----",
+  "signature": "740a2a1845d070a7c58710529c719cf1c778d1f3a66683b33e292d89ed5924aae29e0cf1119ad6b7"
+}

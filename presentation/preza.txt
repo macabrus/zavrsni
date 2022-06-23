@@ -1,0 +1,32 @@
+1.
+Dobar dan, ja sam Bernard
+Predstavit ću Vam svoj završni rad na temu lanca stranica i metoda postizanja suglasja u sustavima elektroničkog novca
+
+2.
+Želio bih započeti sa motivacijom za modeliranjem alternativnog sustava novca. Naime, znamo da se danas većina razmjene novca odvija putem internetskih transakcija preko sustava banaka. Od kritične je važnosti njihovo ispravno funkcioniranje i testiranje tijekom razvoja. Međutim, znamo da i najrobusniji sustavi često imaju propuste. To nas dovodi do prve negativne strane: centraliziranost - idelano, željeli bismo izbjeći jednu točku u sustavu o kojoj ovisi rad cijele mreže. to bi znatno otežalo potencijalne napade. Također, korištenje sustava banaka zahtjeva naše slijepo povjerenje u ispravno upravljanje našim novcem. Da bi stvar bila gora, interkomunikacija između banaka je relativno loše normirana. Velik broj banaka ima svoje infrastrukturne specifičnosti i vlastita sučelja. Najpoznatiji pokušaj da se standardiziraju međunarodne transakcije jest SwiftNET protokol koji koristi približno 50% svjetskih banaka (što je i dalje premalo). Problemi swiftneta su zastarjeli mehanizmi razmjene poruka i niska propusnost.
+
+3.
+Kao zamjena, javila se ideja lanca stranica. Ukratko, to je struktura podataka oblikovana kao povezana lista, samo što su čvorovi povezani sažetcima njihovih roditelja. Sami elementi liste mogu biti bilo kakvi podaci, no u praksi je zablistala njihova uporaba kao lista zapisa transakcija u kriptovalutama. 
+
+4. Stvarne implementacije zasnivaju se na ideji da čuvaju popise ispravnih digitalno potpisanih transakcija. Svaki član mreže ima svoj novčanik koji je zapravo adresa koju bilo koji drugi sudionik mreže može izračunati na temelju javnog ključa. Transakcija se smatra ispravnom ako je izvorišna adresa zapisa upravo ona koja odgovara javnom ključu čiji je privatni par potpisao tu transakciju.
+Ideja sažetka prethodne stranice proširuje se sa pojmom težine ili difficulty - to je zahtjev mreže da svaki sažetak stranice mora imati određeni broj vodećih nul bitova. Čvorovi koji se bave traženjem takvog sažetka nazivaju se rudari, a njih korisnici motiviraju da uključe njihove transakcije na popis sljedeće stranice naknadama koje definiraju u svojoj transakciji.
+
+5. Suglasje je središnji pojam kriptovaluta i lanca stranica općenito. Ono se ne postiže centralnim autoritetom, već povjerenjem u kriptografske primitive i jedan od sljedeća dva mehanizma - dokaz rada  ili dokaz uloga.
+Dokaz rada zasniva se na prethodno spomenutoj ideji traženja sažetka sa vodećih N nul-bitova. Koristi se, naravno, kriptografska funkcija sažetka kako bi njezin izlaz bio nepredvidiv te je najbolja strategija pronalaženja sažetka gruba sila. To na neki način jamči ostatku mreže da je rudar u prosjeku potrošio vrijeme proporcionalno težini.
+Dokaz uloga je novija i potpuno drugačija metoda - ideja je da se glasanjem komiteta rudara odabire rudar koji će validirati transakcije u stranici. Vjerojatnost natjecatelja da bude odabran proporcionalna je njegovom pologu u ugovor koji se sklaplja u mreži komiteta.
+
+6. Usporedimo li ovakav sustav s bankarskim, očigledna je njegova otpornost na napade. Korisnici su anonimni i njihove transakcije anonimne, što praktički onemogućava usmjerene napade na specifičnu žrtvu. Primjerice, Bitcoin mreža anonimnost ostvaruje takozvanim Gossip protokolom koji se koristi za propagaciju transakcija u mreži. Implementiran je kao sloj na TCP protokolom i transakcije ne sadržavaju nikakvu informaciju o svom izvorištu. Ako je ispravna - mreža ju prihvaća i to je jedini zahtjev.
+Zahvaljujući primjeni kriptografije, mreža je otporna na širenje misinformacija, a dokaz rada bi zahtjevao od hipotetskog napadača da ima većinu procesorske snage mreže kako bi ju onesposobio (denial of service).
+
+7. Problemi dokaza rada su niska propusnost i loša ekonomičnost zbog velike potrošnje električne energije na izračunavanje sažetaka stranica.
+Osim toga, ne može se regulirati centralizacija CPU snage (primjer: pojava rudarskih kompanija sa ogromnim količinama računalnih resursa).
+
+8. Novija već spomenuta ideja - dokaz uloga - rješava neke probleme dokaza rada. Rasterećuje mrežu podijelom na manje lance koji su jednakovrijedni te njih grade manji komiteti rudara. Žrtvuje se mala količina decentraliziranosti za značajno bolju propusnost mreže. Koordinaciju ovakvih mreža vrlo je teško ispravno dizajnirati te je njihov razvoj još u ranim fazama. Živi primjer implementacije ove metode je kriptovaluta Cardano sa svojim Ouroboros protokolom.
+
+9. Dolazimo do praktičnog dijela mog rada, simulacija lanca stranica sličnog Bitcoin mreži - dakle zasnovanu na dokazu rada izračunavanjem sažetaka i izgradnju autoritativnog najduljeg valjanog lanca. Čvor u mreži implementiran je u dva dijela, backend koji upravlja svojom lokalnom kopijom lanca, obavlja povezivanje s drugim čvorovima, rudari stranice i validira nove transakcije. Napisao sam ga u programskom jeziku Python i Flask za REST metode. Na frontendu, koji je obična web stranica, pozivao sam REST metode Vanilla Javascriptom koristeći moderan ugrađeni fetch API.
+
+10. Poruke sam razmjenjivao u JSON formatu.
+
+11. 
+
+12. Zaključijem da se tehnologija lanca stranica ubrzano poboljšava te vrvi brojnim novim implementacijama. Pozitivno je utjecala na razvoj distribuiranog računarstva i računalne sigurnosti. Ona je vrlo važan iskorak prema univerzalnom, sigurnijem i transparentnijem sustavu novca.

@@ -1,0 +1,111 @@
+
+
+\tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt        
+
+\begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-1,xscale=1]
+%uncomment if require: \path (0,639); %set diagram left start at 0, and has height of 639
+
+%Shape: Rectangle [id:dp6879661401471834] 
+\draw   (44.05,8) -- (222.78,8) -- (222.78,48) -- (44.05,48) -- cycle ;
+%Shape: Rectangle [id:dp4917139874332799] 
+\draw   (44.05,48) -- (222.78,48) -- (222.78,113) -- (44.05,113) -- cycle ;
+%Rounded Rect [id:dp5881117216446295] 
+\draw  [color={rgb, 255:red, 74; green, 144; blue, 226 }  ,draw opacity=1 ][fill={rgb, 255:red, 74; green, 144; blue, 226 }  ,fill opacity=0.37 ] (60.2,67) .. controls (60.2,62.03) and (64.22,58) .. (69.2,58) -- (197.64,58) .. controls (202.61,58) and (206.64,62.03) .. (206.64,67) -- (206.64,94) .. controls (206.64,98.97) and (202.61,103) .. (197.64,103) -- (69.2,103) .. controls (64.22,103) and (60.2,98.97) .. (60.2,94) -- cycle ;
+%Shape: Rectangle [id:dp23131296451889938] 
+\draw  [color={rgb, 255:red, 65; green, 117; blue, 5 }  ,draw opacity=1 ][fill={rgb, 255:red, 126; green, 211; blue, 33 }  ,fill opacity=0.13 ] (44.05,113) -- (222.78,113) -- (222.78,153) -- (44.05,153) -- cycle ;
+%Shape: Rectangle [id:dp9990726874183903] 
+\draw   (44.05,153) -- (222.78,153) -- (222.78,184) -- (44.05,184) -- cycle ;
+%Shape: Rectangle [id:dp13539697150376118] 
+\draw   (288.51,155) -- (467.24,155) -- (467.24,195) -- (288.51,195) -- cycle ;
+%Shape: Rectangle [id:dp6537956497445302] 
+\draw   (288.51,195) -- (467.24,195) -- (467.24,260) -- (288.51,260) -- cycle ;
+%Rounded Rect [id:dp10703686415446623] 
+\draw  [color={rgb, 255:red, 74; green, 144; blue, 226 }  ,draw opacity=1 ][fill={rgb, 255:red, 74; green, 144; blue, 226 }  ,fill opacity=0.37 ] (304.65,214) .. controls (304.65,209.03) and (308.68,205) .. (313.65,205) -- (442.09,205) .. controls (447.07,205) and (451.09,209.03) .. (451.09,214) -- (451.09,241) .. controls (451.09,245.97) and (447.07,250) .. (442.09,250) -- (313.65,250) .. controls (308.68,250) and (304.65,245.97) .. (304.65,241) -- cycle ;
+%Shape: Rectangle [id:dp34735153371351113] 
+\draw  [color={rgb, 255:red, 65; green, 117; blue, 5 }  ,draw opacity=1 ][fill={rgb, 255:red, 126; green, 211; blue, 33 }  ,fill opacity=0.13 ] (288.51,260) -- (467.24,260) -- (467.24,300) -- (288.51,300) -- cycle ;
+%Shape: Rectangle [id:dp19220402645552204] 
+\draw   (288.51,300) -- (467.24,300) -- (467.24,331) -- (288.51,331) -- cycle ;
+%Shape: Rectangle [id:dp1744475336356791] 
+\draw   (535.27,304) -- (714,304) -- (714,344) -- (535.27,344) -- cycle ;
+%Shape: Rectangle [id:dp02892518564479607] 
+\draw   (535.27,344) -- (714,344) -- (714,409) -- (535.27,409) -- cycle ;
+%Rounded Rect [id:dp8818988177465091] 
+\draw  [color={rgb, 255:red, 74; green, 144; blue, 226 }  ,draw opacity=1 ][fill={rgb, 255:red, 74; green, 144; blue, 226 }  ,fill opacity=0.37 ] (551.41,363) .. controls (551.41,358.03) and (555.44,354) .. (560.41,354) -- (688.86,354) .. controls (693.83,354) and (697.86,358.03) .. (697.86,363) -- (697.86,390) .. controls (697.86,394.97) and (693.83,399) .. (688.86,399) -- (560.41,399) .. controls (555.44,399) and (551.41,394.97) .. (551.41,390) -- cycle ;
+%Shape: Rectangle [id:dp9664847797863013] 
+\draw   (535.27,409) -- (714,409) -- (714,440) -- (535.27,440) -- cycle ;
+%Bend Up Arrow [id:dp8791102503641045] 
+\draw  [color={rgb, 255:red, 0; green, 0; blue, 0 }  ,draw opacity=0 ][fill={rgb, 255:red, 30; green, 114; blue, 212 }  ,fill opacity=0.45 ] (287.47,223.5) -- (130.94,224.18) -- (130.79,196.92) -- (141.63,196.87) -- (128.47,184.21) -- (115.46,196.99) -- (126.3,196.94) -- (126.48,228.69) -- (287.5,227.99) -- cycle ;
+%Bend Up Arrow [id:dp11959450278066641] 
+\draw  [color={rgb, 255:red, 0; green, 0; blue, 0 }  ,draw opacity=0 ][fill={rgb, 255:red, 184; green, 233; blue, 134 }  ,fill opacity=1 ] (223.93,132) -- (372.87,132) -- (372.87,143) -- (364.37,143) -- (374.87,155) -- (385.37,143) -- (376.87,143) -- (376.87,128) -- (223.93,128) -- cycle ;
+%Bend Up Arrow [id:dp9462229653448944] 
+\draw  [color={rgb, 255:red, 0; green, 0; blue, 0 }  ,draw opacity=0 ][fill={rgb, 255:red, 184; green, 233; blue, 134 }  ,fill opacity=1 ] (468.39,281) -- (617.32,281) -- (617.32,292) -- (608.82,292) -- (619.32,304) -- (629.82,292) -- (621.32,292) -- (621.32,277) -- (468.39,277) -- cycle ;
+%Bend Up Arrow [id:dp1266302252638405] 
+\draw  [color={rgb, 255:red, 0; green, 0; blue, 0 }  ,draw opacity=0 ][fill={rgb, 255:red, 30; green, 114; blue, 212 }  ,fill opacity=0.45 ] (534.23,372.5) -- (377.71,373.18) -- (377.55,345.92) -- (388.39,345.87) -- (375.23,333.21) -- (362.22,345.99) -- (373.06,345.94) -- (373.24,377.69) -- (534.26,376.99) -- cycle ;
+%Rounded Rect [id:dp033202697802536485] 
+\draw  [color={rgb, 255:red, 248; green, 231; blue, 28 }  ,draw opacity=1 ][fill={rgb, 255:red, 248; green, 231; blue, 28 }  ,fill opacity=0.23 ] (6,327) .. controls (6,322.03) and (10.03,318) .. (15,318) -- (143.44,318) .. controls (148.41,318) and (152.44,322.03) .. (152.44,327) -- (152.44,354) .. controls (152.44,358.97) and (148.41,363) .. (143.44,363) -- (15,363) .. controls (10.03,363) and (6,358.97) .. (6,354) -- cycle ;
+%Up Arrow [id:dp5944252630304084] 
+\draw  [color={rgb, 255:red, 245; green, 166; blue, 35 }  ,draw opacity=1 ][dash pattern={on 0.84pt off 2.51pt}] (63.65,207.29) -- (76.34,187) -- (89.02,207.29) -- (76.34,207.29) -- (76.34,315) -- (76.34,315) -- (76.34,207.29) -- cycle ;
+%Rounded Rect [id:dp8764980339049099] 
+\draw  [color={rgb, 255:red, 248; green, 231; blue, 28 }  ,draw opacity=1 ][fill={rgb, 255:red, 248; green, 231; blue, 28 }  ,fill opacity=0.23 ] (255.07,473) .. controls (255.07,468.03) and (259.1,464) .. (264.07,464) -- (392.51,464) .. controls (397.48,464) and (401.51,468.03) .. (401.51,473) -- (401.51,500) .. controls (401.51,504.97) and (397.48,509) .. (392.51,509) -- (264.07,509) .. controls (259.1,509) and (255.07,504.97) .. (255.07,500) -- cycle ;
+%Up Arrow [id:dp7523483477979055] 
+\draw  [color={rgb, 255:red, 245; green, 166; blue, 35 }  ,draw opacity=1 ][dash pattern={on 0.84pt off 2.51pt}] (312.72,353.29) -- (325.41,333) -- (338.09,353.29) -- (325.41,353.29) -- (325.41,461) -- (325.41,461) -- (325.41,353.29) -- cycle ;
+%Bend Up Arrow [id:dp4738643488380271] 
+\draw  [color={rgb, 255:red, 245; green, 166; blue, 35 }  ,draw opacity=1 ][dash pattern={on 0.84pt off 2.51pt}] (403.82,485) -- (625.59,485) -- (625.59,461.5) -- (615.59,461.5) -- (625.59,442.5) -- (635.59,461.5) -- (625.59,461.5) -- (625.59,485) -- (403.82,485) -- cycle ;
+
+% Text Node
+\draw (62.99,20) node [anchor=north west][inner sep=0.75pt]   [align=left] {Vlasnički identifikator};
+% Text Node
+\draw (62.2,70) node [anchor=north west][inner sep=0.75pt]   [align=left] {Vlasnikov javni ključ};
+% Text Node
+\draw (58.99,125) node [anchor=north west][inner sep=0.75pt]   [align=left] {Izdavačev identifikator};
+% Text Node
+\draw (76.99,160) node [anchor=north west][inner sep=0.75pt]   [align=left] {Izdavačev potpis};
+% Text Node
+\draw (303.45,166) node [anchor=north west][inner sep=0.75pt]   [align=left] {Izdavačev identifikator};
+% Text Node
+\draw (306.65,217) node [anchor=north west][inner sep=0.75pt]   [align=left] {Izdavačev javni ključ};
+% Text Node
+\draw (303.3,272) node [anchor=north west][inner sep=0.75pt]   [align=left] {Korijenski identifikator};
+% Text Node
+\draw (320.07,307) node [anchor=north west][inner sep=0.75pt]   [align=left] {Korijenski potpis};
+% Text Node
+\draw (550.06,317) node [anchor=north west][inner sep=0.75pt]   [align=left] {Korijenski identifikator};
+% Text Node
+\draw (553.41,366) node [anchor=north west][inner sep=0.75pt]   [align=left] {Korijenski javni ključ};
+% Text Node
+\draw (567.98,416) node [anchor=north west][inner sep=0.75pt]   [align=left] {Korijenski potpis};
+% Text Node
+\draw (159.26,235) node [anchor=north west][inner sep=0.75pt]   [align=left] {Verifikacija};
+% Text Node
+\draw (416.4,384) node [anchor=north west][inner sep=0.75pt]   [align=left] {Verifikacija};
+% Text Node
+\draw (266.27,106) node [anchor=north west][inner sep=0.75pt]   [align=left] {Referenca};
+% Text Node
+\draw (510.72,252) node [anchor=north west][inner sep=0.75pt]   [align=left] {Referenca};
+% Text Node
+\draw (18.8,321) node [anchor=north west][inner sep=0.75pt]   [align=left] {\begin{minipage}[lt]{84.36pt}\setlength\topsep{0pt}
+Izdavačev privatni
+\begin{center}
+ključ
+\end{center}
+
+\end{minipage}};
+% Text Node
+\draw (46.6,306.42) node [anchor=north west][inner sep=0.75pt]  [rotate=-270.55] [align=left] {Digitalni potpis};
+% Text Node
+\draw (267.71,467) node [anchor=north west][inner sep=0.75pt]   [align=left] {\begin{minipage}[lt]{82.65pt}\setlength\topsep{0pt}
+Korijenski privatni
+\begin{center}
+ključ
+\end{center}
+
+\end{minipage}};
+% Text Node
+\draw (295.67,452.42) node [anchor=north west][inner sep=0.75pt]  [rotate=-270.55] [align=left] {Digitalni potpis};
+% Text Node
+\draw (513.36,516) node   [align=left] {\begin{minipage}[lt]{78.41pt}\setlength\topsep{0pt}
+(Samopotpisan)
+\end{minipage}};
+
+
+\end{tikzpicture}

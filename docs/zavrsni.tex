@@ -1,7 +1,7 @@
 \documentclass[utf8, zavrsni]{fer}
 \usepackage{booktabs}
 
-% \usepackage{natbib}
+% \usepackage[sort, numbers, square]{natbib}
 
 
 % ==== za algo pseudokod
@@ -44,12 +44,13 @@
     urlbordercolor={1 1 1}  % color of border around links
 }
 
+
 \graphicspath{{img/}}
 
 \begin{document}
 
 % TODO: Navedite broj rada.
-\thesisnumber{000}
+\thesisnumber{148}
 
 % TODO: Navedite naslov rada.
 \title{Lanac stranica i distribuirano suglasje u sustavima elektroničkog novca}
@@ -69,71 +70,82 @@
 
 % =========================
 \chapter{Uvod}
-Uslijed procesa globalizacije javlja se sve veća potreba za univerzalnim protokolom novca koji bi zamijenio ili barem objedinio postojeće lokalne bankarske sustave. Zbog loše standardizacije te njene slabe primjene u praksi, javljaju se brojni problemi u poslovanjima banaka što značajno smanjuje propusnost obrade transakcija. Također, mikrotransakcije osjetno su neisplative u sustavima koji imaju visoke naknade za prijenos. Te naknade idejno odgovaraju količini posla za uslugu koju nudi birokratski aparat banke. Cilj je minimizirati i automatizirati količinu posla koji se mora obaviti kako bi mogli vršiti razmjenu novca. Motivirani problemima aktualnih sustava, razmotrit ćemo ideju rješenja trenutnog problema --- lanac stranica.
+Uslijed procesa globalizacije javlja se sve veća potreba za univerzalnim protokolom novca koji bi zamijenio ili barem objedinio postojeće lokalne bankarske sustave. Zbog loše standardizacije te njene slabe primjene u praksi, javljaju se brojni problemi u poslovanjima banaka što značajno smanjuje propusnost obrade transakcija. Također, mikrotransakcije osjetno su neisplative u sustavima koji imaju visoke naknade za prijenos. Te naknade idejno odgovaraju količini posla za uslugu koju nudi birokratski aparat banke. Cilj je minimizirati i automatizirati količinu posla koji se mora obaviti kako bi se mogla vršiti razmjena novca. S aktualnim problemima sustava kao motivacijom, razmatra se ideja rješenja trenutnog problema --- lanac stranica.
 
 \section{Koncept središnjeg autoriteta}
-Pojam \textbf{središnjeg autoriteta} opisuje agenciju ili organizaciju koja osigurava provođenje zakona na međunarodnoj razini\cite{enwiki:969028445}. U ovom nas kontekstu konkretno zanima što taj pojam znači u računarstvu. To je najbolje demonstrirati primjerom koji je u ovoj domeni najčešće asociran s ulogom središnjeg autoriteta: \textbf{Certifikatni autoritet} (engl. \textit{Certificate authority}) - aktor koji se bavi potpisivanjem SSL certifikata korištenih u HTTPS protokolu. On ima korijenski samo-potpisani certifikat koji koristi za daljnje potpisivanje zahtjeva (engl. \textit{Certificate Signing Request}). U praksi obavlja provjeru stvarnog identiteta, odnosno njegovu asocijaciju s certifikatom \textit{web} poslužitelja drugih firmi koje žele zadobiti povjerenje klijenata. U samom certifikatu digitalno su potpisane informacije poput javnog ključa korisnika usluge, informacije o tvrtki te vrijeme isteka valjanosti. \textbf{Povezivanjem identiteta fizičke osobe ili organizacije s javnim ključem poslužitelja} osigurava se odgovornost (engl. \textit{liability}) i neporecivost ( engl. \textit{non-repudiation}) u komunikaciji korisnika s vlasnikom certifikata. Ključno je uočiti to svojstvo neporecivosti i povezanosti s identitetom. Samu tajnost komunikacijskog kanala možemo osigurati i bez centralnog tijela (koristeći kriptografske metode za razmjenu ključeva), no ne možemo biti sigurni u identitet druge strane ako prolazimo nesigurnim komunikacijskim kanalom (bez prethodne fizičke interakcije). To je razlog zašto, primjerice, \textit{web} preglednici moraju imati unaprijed ugrađene certifikate izdane od vršnih autoriteta (engl. \textit{Root CA}). Vršni izdavatelji certifikata mogu delegirati to pravo na podređene izdavatelje te tako nastaju \textbf{certifikatni lanci}. Aktualna specifikacija TLS 1.3 mehanizama nalazi se u RFC-8446.
+Pojam \textbf{središnjeg autoriteta} opisuje agenciju ili organizaciju koja osigurava provođenje zakona na međunarodnoj razini \cite{enwiki:969028445}. U ovom nas kontekstu konkretno zanima što taj pojam znači u računarstvu. To je najbolje demonstrirati primjerom koji je u ovoj domeni najčešće asociran s ulogom središnjeg autoriteta: \textbf{Certifikatni autoritet} (engl. \textit{Certificate authority}) - aktor koji se bavi potpisivanjem SSL certifikata korištenih u HTTPS protokolu. On ima korijenski samopotpisani certifikat koji koristi za daljnje potpisivanje zahtjeva (engl. \textit{Certificate Signing Request}). U praksi obavlja provjeru stvarnog identiteta, odnosno njegovu asocijaciju s certifikatom \textit{web} poslužitelja drugih firmi koje žele zadobiti povjerenje klijenata. U samom certifikatu digitalno su potpisane informacije poput javnog ključa korisnika usluge, informacije o tvrtki te vrijeme isteka valjanosti. \textbf{Povezivanjem identiteta fizičke osobe ili organizacije s javnim ključem poslužitelja} osigurava se odgovornost (engl. \textit{liability}) i neporecivost ( engl. \textit{non-repudiation}) u komunikaciji korisnika s vlasnikom certifikata. Ključno je uočiti to svojstvo neporecivosti i povezanosti s identitetom. Sama tajnost može se osigurati i bez centralnog tijela (koristeći kriptografske metode za razmjenu ključeva), no nije moguće biti siguran u identitet druge strane ako se komunicira nesigurnim kanalom (bez prethodne fizičke interakcije). To je razlog zašto, primjerice, \textit{web} preglednici moraju imati unaprijed ugrađene certifikate izdane od vršnih autoriteta (engl. \textit{Root CA}). Vršni izdavatelji certifikata mogu delegirati to pravo na podređene izdavatelje te tako nastaju \textbf{certifikatni lanci}. Aktualna specifikacija TLS 1.3 mehanizama nalazi se u RFC-8446.
+
+\begin{figure}[H]
+    \label{chainscheme}
+    \resizebox{\textwidth}{!}{%
+    \includegraphics{trustchain.png}
+    }%
+    \caption{Sažeti prikaz certifikatnog lanca}
+\end{figure}
 
 
 \chapter{Elektronički novac}
 
-Ispostavilo se da je novac najpraktičniji oblik razmjene dobara u obliku trajnog zapisa (u fizičkom ili digitalnom obliku) kada ono što on supstituira nije odmah dostupno. On je trajni zapis koji vlasniku garantira da će mu njegova usluga biti uzvraćena u obliku drugačijeg dobra. Važno je razumjeti da suvremene tehnike ostvarenja takvog sustava nisu jedine te da postoje drugi načini za postizanje istog benefita kojeg nam on donosi.
+Ispostavilo se da je novac najpraktičniji oblik razmjene dobara u obliku trajnog zapisa (u fizičkom ili digitalnom obliku) kada ono što on supstituira nije odmah dostupno. On je trajni zapis koji vlasniku jamči da će njegova usluga biti uzvraćena u obliku nekog drugog dobra. Važno je napomenuti da suvremene tehnike ostvarenja takvog sustava nisu jedine te da postoje drugi, potencijalno transparentniji i efikasniji, načini za rješenje istog problema razmjene novčane vrijednosti.
 
 \section{Postojeći sustavi novca}
-Tradicionalni bankarski sustavi zasnovani su na računalima poslužiteljima koji pohranjuju stanje sustava u relacijskim bazama podataka te upravljaju korisničkim sjednicama, obavljaju autentifikaciju i autorizaciju te barataju transakcijama i stanjima računa. Centralizirana priroda ovakvog sustava osigurava konzistentnost sustava kroz vrijeme, lakše atomične operacije prijenosa sredstava, ali ona ima i neke nedostatke. \\
-Naime, pošto ne postoji jedna globalna banka, nastaje problem kako se razmjenjuju sredstva na međunarodnoj razini. Kao primjer jednog rješenja tog problema valjalo bi spomenuti SWIFTNet mrežu \cite{enwiki:1021608159}. SWIFT je osnovan 1973. te je do danas prošao kroz brojne revizije protokola kako bi se od 2001. do 2004. migriralo sa zastarijelog X.25 mrežnog protokola na internet protokol (IP). Kao serijalizacijski format za razmjenu poruka koristi XML. Tada je nastao novi skup standarda (ISO 20022-1: 2004 i ISO 20022-2:2007, \textit{Financial services – Universal Financial Industry message scheme}). Kasnije je ponovno nadograđivan te je danas on poznat pod nazivom \textit{SWIFTNet Phase 2}. Taj bi sustav trebao olakšati i u konačnici potpuno standardizirati razmjenu financijskih poruka između banaka u svijetu. Važno je napomenuti da SWIFTNet ne služi za transakcije među bankama već za delegaciju poruka plaćanja lokalnom bankarskom sustavu pri međunarodnoj trgovini. \\ 
+Tradicionalni bankarski sustavi zasnovani su na računalima poslužiteljima koji pohranjuju stanje sustava u relacijskim bazama podataka te upravljaju korisničkim sjednicama, obavljaju autentifikaciju i autorizaciju te upravljaju transakcijama i stanjima računa. Centralizirana priroda ovakvog sustava osigurava konzistentnost sustava kroz vrijeme, lakše atomične operacije prijenosa sredstava, ali ona ima i neke nedostatke. \\
+Naime, pošto ne postoji jedna globalna banka, nastaje problem kako se razmjenjuju sredstva na međunarodnoj razini. Kao primjer jednog rješenja tog problema valjalo bi spomenuti SWIFTNet mrežu \cite{enwiki:1021608159}. SWIFT je osnovan 1973. te je do danas prošao kroz brojne revizije protokola kako bi se od 2001. do 2004. migriralo sa zastarijelog X.25 mrežnog protokola na internet protokol (IP). Kao serijalizacijski format za razmjenu poruka koristi XML. Tada je nastao novi skup normi (ISO 20022-1: 2004 i ISO 20022-2:2007, \textit{Financial services – Universal Financial Industry message scheme}). Kasnije je ponovno nadograđivan te je danas on poznat pod nazivom \textit{SWIFTNet Phase 2}. Taj bi sustav trebao olakšati i u konačnici potpuno standardizirati razmjenu financijskih poruka između banaka u svijetu. Važno je napomenuti da SWIFTNet ne služi za transakcije među bankama već za delegaciju poruka plaćanja lokalnom bankarskom sustavu pri međunarodnoj trgovini. \\ 
 
 Također je poznato da postoje i manje organizacije nalik na SWIFT na razini lokalnih organizacijskih jedinica u državama. Ukratko, većina banaka i dalje ima brojne domenski specifične servise i način funkcioniranja, no ide se prema implementiranju ovog standarda.
 
 \section{Problemi tradicionalnih bankarskih sustava}
 	
-Može se zaključiti da je financijski sustav iznimno kompleksan, varijabilan. Nestabilan je kroz vrijeme zbog čestih promjena kako bi ostao u koraku s tehnološkim napretkom. Postavlja se pitanje može li se sustav prijenosa financijskih sredstava pojednostaviti, a da zadržimo njegovu pouzdanost (ili ju čak i povećamo). \\
+Može se zaključiti da je financijski sustav iznimno kompleksan, varijabilan. Nestabilan je kroz vrijeme zbog čestih promjena kako bi ostao u koraku s tehnološkim napretkom. Postavlja se pitanje može li se sustav prijenosa financijskih sredstava pojednostaviti, a da se zadrži njegova pouzdanost (ili se čak poveća). \\
 
-Elektronički sustavi novca zahtijevaju visoku propusnost pri obradi upita, stalnu dostupnost, pouzdanost i otpornost na napade i zlonamjerne vanjske aktore. To su vrlo strogi zahtjevi za bilo koji sustav, a pogotovo za velike sustave koji u poslovnim procesima imaju ljudski faktor (veliki birokratski aparat) jer su ljudi skloni pogreškama i kršenju pravila. Osim toga, sama činjenica da je sustav centraliziran znači da postoji točka kvara i svi podređeni čvorovi prestaju funkcionirati što može uzrokovati ogromne štete. Na primjer, ako se sruši kritični bankovni poslužitelj, daljnje transakcije će biti onemogućene za sve korisnike te banke. \\
+Elektronički sustavi novca zahtijevaju visoku propusnost pri obradi upita, stalnu dostupnost, pouzdanost i otpornost na napade i zlonamjerne vanjske aktore. To su vrlo strogi zahtjevi za bilo koji sustav, a pogotovo za velike sustave koji u poslovnim procesima imaju ljudski faktor (veliki birokratski aparat) jer su ljudi skloni pogreškama i kršenju pravila. Osim toga, sama činjenica da je sustav centraliziran znači da postoji točka kvara i svi podređeni čvorovi prestaju funkcionirati što može uzrokovati ozbiljne štete u složenim sustavima. Na primjer, ako se sruši kritični bankovni poslužitelj, daljnje transakcije će biti onemogućene za sve korisnike te banke. \\
 
-Druga neželjena nuspojava je potreba za hijerarhijom povjerenja. Naime, čvorovi mreže trebaju vjerovati nadležnima čvorovima te ukoliko je jedan kompromitiran cijelo podstablo takve strukture povjerenja je kompromitirano. Također, kompromis bilo koje financijske institucije u toj strukturi zahtjeva intervenciju pravnog sustava država. \\
+Druga neželjena nuspojava je potreba za hijerarhijom povjerenja. Naime, čvorovi mreže trebaju vjerovati nadležnima čvorovima te ako je jedan čvor kompromitiran cijelo podstablo takve strukture povjerenja je kompromitirano. Također, kompromis bilo koje financijske institucije u toj strukturi zahtjeva intervenciju pravnog sustava država. \\
 
-Stoga, želimo li koristiti usluge banaka, moramo vjerovati da će ispravno baratati našim financijskim sredstvima.
+Stoga, žele li se koristiti usluge banke, potrebno joj je vjerovati da ona neće zloporabiti ili neoprezno upravljati novcem svojih korisnika.
 Unatoč velikoj pouzdanosti, česti su primjeri zakazivanja centraliziranih sustava.
 
 \chapter{Kriptografska podloga}
-Prije no što opišemo način funkcioniranja lanca stranica kroz danas najpoznatiju kriptovalutu Bitcoin i demonstriramo postizanje suglasja, važno je definirati korištene kriptografske primitive za njegovu uspješnu implementaciju. Stoga, kada se spominje sažetak ili digitalni potpis, odnosit će se na metode bazirane na sljedećim definicijama.
+Prije opisa arhitekture lanca stranica kroz danas najpoznatiju kriptovalutu Bitcoin i demonstriracije postizanje suglasja softverskom simulacijom, važno je definirati korištene kriptografske primitive za njegovu uspješnu implementaciju. Stoga, kada se spominje sažetak ili digitalni potpis, odnosit će se na metode bazirane na sljedećim definicijama.
 
 \section{Funkcija sažetka}
 Kriptografska funkcija sažetka $h(x): \{0,1\}^k \rightarrow \{0,1\}^l$ ulazu proizvoljne duljine pridružuje determinističku izlaznu vrijednost fiksne duljine. Još se naziva i kompresijska funkcija zato što bilo kakav niz bitova sažima na praktično jedinstven k-bitni identifikator. Željena svojstva te funkcije da bi se ona smatrala sigurnom su:
 
 \begin{itemize}
-	\item ireverzibilnost --- poznavajući izlaz $y$ ne možemo odrediti ulaznu vrijednost $m$ tako da vrijedi $y = h(m)$ ako ju prethodno nismo znali
-	\item otpornost na kolizije --- da svakoj ulaznoj vrijednosti mapira jedinstvenu izlaznu vrijednost, što, naravno, nije moguće jer je domena znatno veća od kodomene takve funkcije. Prilikom dizajna teži se što većoj difuziji, tako da su izlazne vrijednosti uniformno raspoređene u prostoru ključeva. Ukoliko se pronađe kolizija dvaju izlaza, funkcija se prestane smatrati kriptografski sigurnom
+	\item ireverzibilnost --- poznavajući izlaz $y$ ne može se odrediti ulazna vrijednost $m$ tako da vrijedi $y = h(m)$ ako prethodno nije bila poznata
+	\item otpornost na kolizije --- da svakoj ulaznoj vrijednosti mapira jedinstvenu izlaznu vrijednost, što, naravno, nije moguće jer je domena znatno veća od kodomene takve funkcije. Prilikom dizajna teži se što većoj difuziji, tako da su izlazne vrijednosti uniformno raspoređene u prostoru ključeva. Ako se pronađe kolizija dvaju izlaza, funkcija se prestane smatrati kriptografski sigurnom
+	\item efekt lavine --- čak i mala promijena u ulaznom parametru funkcije bi trebala potpuno promijeniti rezultat sažimanja
+	\item složenost izračuna trebala bi linearno rasti s veličinom ulaza
 \end{itemize}
 
 \section{Shema digitalnog potpisa}
-Digitalni potpis nam služi kako bismo u komunikaciji nesigurnim kanalom mogli osigurati autentičnost poruke našeg sugovornika. To činimo tako da uz svaku poruku koju šaljemo prilažemo jedinstvenu oznaku koja će nakon verifikacije biti dokaz da u tranzitu bitovi informacije nisu bili mijenjani. Formalno, shemu sačinjava trojka $(G, S, V)$ koja predstavlja:
+Digitalni potpis služi za provjeru autentičnosti i integriteta poruke sugovornika u komunikaciji nesigurnim kanalom. Izveden je tako da uz svaku poruku koja se šalje, prilaže se jedinstvena oznaka koja će, nakon verifikacije, biti dokaz da bitovi informacije u tranzitu nisu bili mijenjani. Formalno, shemu sačinjava trojka $(G, S, V)$ koja predstavlja:
 \begin{itemize}
 	\item $G(x)$ --- funkcija generator para $(k_{s}, k_{v})$ koja kao ulazni parametar prima razinu sigurnosti
-	\item $S(m, k_{s})$ --- funkcija za potpisivanje koja uz generirani privatni ključ vraća potpis $s$ koji, idealno, jedinstveno odgovara poruci $m$
+	\item $S(m, k_{s})$ --- funkcija za potpisivanje koja uz stvoreni privatni ključ vraća potpis $s$ koji, idealno, jedinstveno odgovara poruci $m$
 	\item $V(m, s, k_{v})$ --- funkcija verifikacije ispravnosti potpisa koja pomoću $k_{v}$ vraća logičku istinu ili laž ovisno o tome je li $s$ zaista potpis od $m$
 \end{itemize}
-Kako bismo ju smatrali sigurnom ona mora pružati sljedeće kvalitete:
+Kako bi se smatrala sigurnom, ona mora pružati sljedeće kvalitete:
 \begin{itemize}
 	\item Autentifikaciju potpisatelja poruke (osigurava identitet)
-	\item Integritet --- mogućnost otkrivanja ukoliko je poruka bila mijenjana prilikom slanja (to slijedi direktno iz otpornosti potpisa na kolizije)
+	\item Integritet --- mogućnost otkrivanja ako je poruka bila mijenjana prilikom slanja (to slijedi direktno iz otpornosti potpisa na kolizije)
 	\item Neporecivost --- ne može se poreći potpisivanje poruke koja je vezana uz nečij javni ključ. To sljedi i iz nekrivotvorivosti potpisa, odnosno veza između ključa i potpisa je jedinstvena.
 \end{itemize}
+Prve sheme digitalnog potpisa koristile su asimetričnu RSA kriptografiju, a Lamport je predložio shemu potpisa koja koristi jednokratne ključeve zasnovane isključivo na funkcijama sažetka (engl. \textit{hash based signatures}). Sheme zasnovane na sažetcima imaju zanimljivo svojstvo otpornosti na napade kvantnim računalima te se koriste u nekim kriptovalutama danas.
 
 \chapter{Lanac stranica}
-Lanac stranica općeniti je naziv za jednu od metoda implementacije mreže ravnopravnih sudionika bez nadležnog autoriteta za postizanje suglasja. On može imati različite primjene (monetarni sustavi, ugovori, glasovanje, prodaja digitalnih dobara, osiguranje autorskih prava, sigurnu pohranu podataka i brojni drugi...). Povjerenje koje tradicionalno dajemo nekom centralnom tijelu sada se premješta na povjerenje u kriptografske primitive koje su dokazano pouzdane te ne sadržavaju ljudski faktor sklon pogreškama.
+Lanac stranica općeniti je naziv za jednu od metoda implementacije mreže ravnopravnih sudionika bez nadležnog autoriteta za postizanje suglasja. On može imati različite primjene (monetarni sustavi, ugovori, glasovanje, prodaja digitalnih dobara, osiguranje autorskih prava, sigurnu pohranu podataka i brojni drugi...). Povjerenje koje se tradicionalno daje nekom centralnom tijelu sada se premješta na povjerenje u kriptografske primitive koje su dokazano pouzdane te ne sadržavaju ljudski faktor sklon pogreškama.
 
-Lanac stranica metoda je koja izjednačuje identitet sa samim kriptografskim ključem i time eliminira potrebu za središnjim autoritetom koji bi regulirao identitet. Suglasje oko globalnog stanja sustava postiže se glasovanjem legitimnih\footnotemark čvorova mreže (ono što vjeruje većina čvorova mreže, smatra se pravim stanjem).
+Lanac stranica metoda je koja izjednačuje identitet sa samim kriptografskim ključem i time eliminira potrebu za središnjim autoritetom koji bi regulirao identitet. Suglasje oko globalnog stanja sustava postiže se glasovanjem legitimnih \footnotemark čvorova mreže (ono što vjeruje većina čvorova mreže, smatra se pravim stanjem).
 
 Stranice u lancu sadrže podatke o stanju mreže te opisuju sve nove događaje u njoj. Temeljem njihovih informacija donose se buduće odluke na lancu. Kaže se da su stranice povezane u lanac zato što su ulančane svojim kriptografskim sažetcima - odnosno, svaki sljedeći lanac sadrži u sebi informaciju sažetka prethodnog lanca. To služi za očuvanje integriteta lanca stranica u slučaju pogrešaka ili namjernih pokušaja napada.
 
 \footnotetext{Legitimnim čvorom smatra se svaki čvor koji je kompatibilan sa specifikacijom sustava, odnosno poštuje sva pravila ispravne komunikacije s drugim čvorovima (to ga i dalje ne sprječava da pokuša zlonamjerno komunicirati s ostalim sudionicima)}
 
 % ==========================
-\section{Arhitektura Bitcoina}
+\section{Arhitektura sustava kriptovalute}
 \subsection{Ključevi}
-Bitcoin mreža koristi ECDSA secp256k1 eliptičnu krivulju kao osnovni algoritam za potpisivanje transakcija u binarnom DER formatu.
+Bitcoin mreža koristi ECDSA \textit{secp256k1} eliptičnu krivulju kao osnovni algoritam za potpisivanje transakcija u binarnom DER formatu.
 \subsection{Adrese}
 Adrese u Bitcoin mreži se često pojednostavljeno nazivaju sažetcima javnih ključeva. \textit{SHA256} i \textit{RIPE160} predstavljaju kriptografske funkcije sažetka. Verzija protokola uključena je u izračun kako nebi došlo kolizija s adresama iz drugih kriptovaluta baziranih na Bitcoin mreži (ili lanaca nastalih račvanjem). Izračunava se kao
 \begin{equation} \label{eq2}
@@ -147,7 +159,7 @@ gdje $ V $ označava verziju protokola, a $A$ našu ciljnu adresu izvedenu iz ja
 
 \subsection{Merkleovo stablo}
 \label{merkle}
-Pretpostavimo da želimo u stvarnom vremenu određivati sažetak niza podataka koji linearno raste. Naivno bismo vjerojatno prvo došli na ideju da pri svakom proširenju niza podataka ponovno izračunamo sažetak niza svih elemenata. Pretpostavimo da je duljina svakog niza $d$ te da je vremenska složenost funkcije sažetka $O(n)$ za niz duljine $n \cdot d$. Cijena uzastopnog ažuriranja sažetka takve rastuće strukture
+Kako rješiti problem efikasnog izračunavanja sažetka niza bitova kontinuiranog toka podataka? Naivnom bi se metodom vjerojatno prvo došlo na ideju da pri svakom proširenju niza novim elementom ponovno izračunamo sažetak cijelog niza. Ako se pretpostavi da je duljina svakog niza $d$ te da je vremenska složenost funkcije sažetka $O(n)$ za niz duljine $n \cdot d$. Cijena uzastopnog ažuriranja sažetka takve rastuće strukture
 $$
 C_{sažetak} \cdot \sum_{d=0}^{n} d = C_{sažetak} \cdot \frac{n^2}{2}
 $$
@@ -175,7 +187,7 @@ Stranica je struktura podataka koja ima rezervirana specijalna polja za sljedeć
 \end{itemize}
 
 \subsection{Transakcija}
-Transakcije u Bitcoin mreži organizirane su u takozvane nepotrošene izlaze (engl. \textit{UTXO - Unspent Transaction Output}) koji se sastoje od varijabilnog broja ulaza (\textit{TxIn}) i 2 izlaza (\textit{TxOut}). Razlog za dva izlaza jest slanje samo dijela iznosa na nečiju adresu i usmjeravanje ostatka natrag na vlastitu adresu. Broj ulaza varira jer možemo primiti više iznosa s više adresa.
+Transakcije u Bitcoin mreži organizirane su u takozvane nepotrošene izlaze (engl. \textit{UTXO - Unspent Transaction Output}) koji se sastoje od varijabilnog broja ulaza (\textit{TxIn}) i 2 izlaza (\textit{TxOut}). Razlog za dva izlaza jest slanje samo dijela iznosa na nečiju adresu i usmjeravanje ostatka natrag na vlastitu adresu. Broj ulaza varira jer se može primiti više iznosa s više adresa.
 
 \label{block_reward}
 Postoji posebna vrsta transakcija zvana baza novca (engl. \textit{coinbase}) koje nemaju ulaze. Njih rudar dodaje sa svojom adresom kao odredišnom jer prema specifikaciji Bitcoina on to smije napraviti i ostatak mreže će prihvatiti takav blok kao važeći. To se naziva nagrada za stranicu (engl. \textit{block reward}) te se iznos prepolavlja svakih 210.000 stranica ($\approx$ \text{4 godine}).
@@ -183,39 +195,38 @@ Postoji posebna vrsta transakcija zvana baza novca (engl. \textit{coinbase}) koj
 % =========================
 
 \subsection{Potvrđivanje transakcija digitalnim potpisima}
-Bitcoin, nesumnjivo vodeća kriptovaluta današnjice, jedan je od jednostavnijih primjera implementacije protokola za digitalni novac temeljen na ideji lanca stranica. Objasnit ćemo ukratko ideju rada Bitcoina i njegova ograničenja. Čvorovi Bitcoin mreže postižu suglasje takozvanim rudarenjem što je zapravo uzastopno ponavljanje operacija izračunavanja SHA-256 sažetka stranice (engl. \textit{ledger}) konkateniranog s nekom vrijednosti koju rudar mora pronaći kako bi zadovoljio zahtjev mreže - a to je da konačni sažetak ima prefiks od $N$ nul-bitova. Broj N zove se težina (engl. \textit{difficulty}) te je on direktno povezan s vjerojatnošću pronalaženja takvog sažetka. To se radi kako bi čvor koji uspješno pronađe taj sažetak mogao dokazati ostatku mreže da je on (u prosjeku) uložio vrijeme proporcionalno broju zahtjevanih prefiks nula. Ostatak mreže mu mora vjerovati jer ne postoji prečica kojom bi se predvidjela vrijednost funkcije sažetka bez da ju zapravo provedemo. Integritet Bitcoin lanca oslanja se na uvjerenje da je SHA-256 kriptografski sigurna funkcija sažetka. Opisat ćemo u nekoliko koraka proces kojim bi zamišljeni aktori Alice i Bob proveli transakciju u Bitcoin mreži:
+Bitcoin, nesumnjivo vodeća kriptovaluta današnjice, jedan je od jednostavnijih primjera implementacije protokola za digitalni novac temeljen na ideji lanca stranica. Za uspješnu simulaciju lanca stranica, potrebno je razumijeti način rada Bitcoina i njegova ograničenja. Čvorovi Bitcoin mreže postižu suglasje takozvanim rudarenjem što je zapravo uzastopno ponavljanje operacija izračunavanja SHA-256 sažetka stranice (engl. \textit{ledger}) konkateniranog s nekom vrijednosti koju rudar mora pronaći kako bi zadovoljio zahtjev mreže - a to je da konačni sažetak ima prefiks od $N$ nul-bitova. Broj N zove se težina (engl. \textit{difficulty}) te je on direktno povezan s vjerojatnošću pronalaženja takvog sažetka. To se radi kako bi čvor koji uspješno pronađe taj sažetak mogao dokazati ostatku mreže da je on (u prosjeku) uložio vrijeme proporcionalno broju zahtjevanih prefiks nula. Ostatak mreže mu mora vjerovati jer ne postoji prečica kojom bi se predvidjela vrijednost funkcije sažetka bez da se zapravo provede. Integritet Bitcoin lanca oslanja se na uvjerenje da je SHA-256 kriptografski sigurna funkcija sažetka. U sljedećih će nekoliko koraka biti objašnjen proces kako bi zamišljeni aktori Alice i Bob proveli transakciju u Bitcoin mreži:
 
 \begin{enumerate}
     \interfootnotelinepenalty=10000
-	\item Alice i Bob izgeneriraju kriptografske ključeve shemom digitalnog potpisa.
-	\item Alice izradi transakciju u kojoj navodi da Bobu šalje određeni iznos novca. Alice zatim potpiše tu izjavu (engl. \textit{claim}) svojim tajnim ključem te ju objavi u mrežu
+	\item Alice i Bob stvore kriptografske ključeve shemom digitalnog potpisa.
+	\item Alice izradi transakciju u kojoj navodi da Bobu šalje određeni iznos novca. Alice zatim potpiše tu izjavu (engl. \textit{claim}) svojim tajnim ključem te ju objavi u mrežu.
 
 	\item Objava transakcije mreži je anonimna. Iako se koristi TCP, vrlo je teško otkriti pravo izvorište transakcije. Anonimizacija se postiže tzv. \textit{gossip protokolom}. Kada se primi ispravna poruka, svaki ju čvor prosljeđuje susjednim čvorovima, a ti čvorovi svojim susjedima itd.
 	\item Rudari dodaju Alicinu transakciju na listu nepotvrđenih transakcija \footnotemark.
 	\footnotetext{\textit{Unconfirmed transaction pool} je bazen (prioritetni red nepotvrđenih transakcija koje se trebaju obraditi). On je sortiran tako da rudar iz njega uzima transakcije koje njemu donose najveći profit te ih validira i dodaje na popis u sljedeću stranicu koju treba izrudariti.}
 	
-	\item Rudar će iz prioritetnog reda sortiranog po veličini naknade za svoju uslugu\footnotemark uzimati transakcije, provjeriti ispravnost potpisa te njihovu odgovaraju li oni zapisima u bazi povijesti lanca stranica.
-	\footnotetext{\textit{Transaction fee} je mali iznos koji plaćamo rudaru za njegovu uslugu potvrđivanja naše transakcije kako bi ga motivirali da uključi zapis o našoj transakciji u sljedeću stranicu koju će izrudariti.}
+	\item Rudar će iz prioritetnog reda sortiranog po veličini naknade za svoju uslugu \footnotemark uzimati transakcije, provjeriti ispravnost potpisa te njihovu odgovaraju li oni zapisima u bazi povijesti lanca stranica.
+	\footnotetext{\textit{Transaction fee} je mali iznos koji Alice plaća rudaru za njegovu uslugu potvrđivanja transakcije kako bi ga se motiviralo da uključi zapis o njezinoj transakciji u sljedeću stranicu koju će izrudariti.}
 	
 	\item Ako je transakcija ispravna, rudar dodaje transakciju na popis u sljedeću stranicu u lancu koju treba \say{izrudariti}.
-	\item Važeće transakcije spremaju se u binarno stablo gdje je roditeljski sažetak jednak sažetku oba sažetka djece\footnotemark. Takva struktura podataka olakšava izračunavanje SHA sažetka bez da moramo trošiti vrijeme na ponovno izračunavanje svih starih SHA-256 sažetaka prijašnjih transakcija u stablu koje stalno raste. Pri dodavanju novih transakcija moramo samo ažurirati jednu granu u tom stablu koja vodi do korijenskog sažetka koji u konačnici završava u opisniku stranice zajedno sa zaglavljem stranice, i odredišnom adresom rudara \footnotetext{\textit{Merkle tree} ili u Ethereum mreži \textit{Patricia (prefix) trie} je struktura podataka koja se koristi za pohranjivanje valjanih tekućih transakcija (više u \ref{merkle}).}
+	\item Važeće transakcije spremaju se u binarno stablo gdje je roditeljski sažetak jednak sažetku oba sažetka djece \footnotemark. Takva struktura podataka olakšava izračunavanje SHA-256 sažetka bez da moramo trošiti vrijeme na ponovno izračunavanje svih starih SHA-256 sažetaka prijašnjih transakcija u stablu koje stalno raste. Pri dodavanju novih transakcija moramo samo ažurirati jednu granu u tom stablu koja vodi do korijenskog sažetka koji u konačnici završava u opisniku stranice zajedno sa zaglavljem stranice, i odredišnom adresom rudara \footnotetext{\textit{Merkle tree} ili u Ethereum mreži \textit{Patricia (prefix) trie} je struktura podataka koja se koristi za pohranjivanje valjanih tekućih transakcija (više u \ref{merkle}).}
 	
-	\item U stranici postoji mjesto rezervirano za poseban broj kojeg rudar traži grubom silom tako da sažetak opisnika stranice ima svojstvo koje zahtijeva mreža ($N$ vodećih nul-bitova)\footnotemark.
+	\item U stranici postoji mjesto rezervirano za poseban broj kojeg rudar traži grubom silom tako da sažetak opisnika stranice ima svojstvo koje zahtijeva mreža ($N$ vodećih nul-bitova) \footnotemark.
 	\footnotetext{\textit{Difficulty} ili težina mreže je broj vodećih 0-bitova koje sažetak lanca mora sadržavati}
 	
 	\item Uslijed pronalaženja sažetka s odgovarjuće težine, on objavljuje svoju stranicu susjednim čvorovima i na taj se način nova stranica propagira kroz mrežu. Svi čvorovi preuzimaju novu stranicu, prestaju sa traženjem svojeg \textit{noncea} te ponovno grade novu stranicu na upravo primljenoj stranici.
-	\item Čvorovi koji još nisu čuli za novu stranicu, nastavljaju se natjecati s njom. Ukoliko dođe do istovremenog rudarenja više jednakovrijednih stranica na različitim računalima, onaj koji se uspije propagirati na više čvorova ima veće izglede da će izrudariti i sljedeću stranicu zasnovanu na toj stranici te time 'pobijediti'\footnotemark
-	\footnotetext{\textit{Orphaned block} je stranica koja je odbačena jer je započela kraću granu u lancu, a prema suglasju mreže, uvijek moramo graditi na najduljem lancu jer je on autoritativan te prikazuje stvarno stanje mreže. Transakcije na odbačenim stranicama postaju nevažeće. To je jedan od razloga zašto se savjetuje da se pričeka nekoliko blokova prije nego što se vjeruje posljednjoj izrudarenoj stranici}
+	\item Čvorovi koji još nisu čuli za novu stranicu, nastavljaju se natjecati s njom. Ako dođe do istovremenog rudarenja više jednakovrijednih stranica na različitim računalima, onaj koji se uspije propagirati na više čvorova ima veće izglede da će izrudariti i sljedeću stranicu zasnovanu na toj stranici te time \say{pobijediti} \footnotemark \footnotetext{\textit{Orphaned block} je stranica koja je odbačena jer je započela kraću granu u lancu, a prema suglasju mreže, uvijek moramo graditi na najduljem lancu jer je on autoritativan te prikazuje stvarno stanje mreže. Transakcije na odbačenim stranicama postaju nevažeće. To je jedan od razloga zašto se savjetuje da se pričeka nekoliko blokova prije nego što se vjeruje posljednjoj izrudarenoj stranici}
 	\footnotemark.
 	\footnotetext{\textit{Forking} ili račvanje je trenutak kada se još ne zna pravo stanje mreže zbog dvije stranice nastale u bliskom vremenskom okviru. To se relativno brzo razrješava rudarenjem već sljedeće stranice nakon jedne od njih}
 	Prosječno vrijeme potrebno za nastanak nove stranice u Bitcoin mreži je 10 minuta (dok neki lanci stranica poput Ethereuma imaju znatno kraće vrijeme od 14 sekundi). Stoga je privremeno račvanje češća pojava u Ethereum mreži.
 \end{enumerate}
 
 \subsection{Vrijeme stranice}
-Pojam vrijeme stranice odnosi se na prosječno vrijeme koje protekne između rudarenja dvije uzastopne stranice u lancu. Bitcoin ima samo-podesivi mehanizam ugrađen u protokol koji brine da prosječno vrijeme za pronalaženje sažetka sljedeće stranice bude oko 10 minuta. Međutim, novi čvorovi nastaju u mreži, a neki postojeći se gase te stoga ukupna komputacijska snaga doživljava stalne fluktuacije. Rješenje za taj problem je da se broj zahtijevanih vodećih nul-bitova u bloku prilagođava obrnuto proporcionalno prosječnom vremenu mreže svakih 2016 stranica (što je okvirno 2 tjedna). Svaki rudar taj broj može nezavisno izračunati te prilagoditi svoj ciljani broj vodećih nul-bitova koje traži. Na taj je način osigurano približno konstantno vrijeme stranice.
+Pojam vrijeme stranice odnosi se na prosječno vrijeme koje protekne između rudarenja dvije uzastopne stranice u lancu. Bitcoin ima samopodesivi mehanizam ugrađen u protokol koji brine da prosječno vrijeme za pronalaženje sažetka sljedeće stranice bude oko 10 minuta. Međutim, novi čvorovi nastaju u mreži, a neki postojeći se gase te stoga ukupna komputacijska snaga doživljava stalne fluktuacije. Rješenje za taj problem je da se broj zahtijevanih vodećih nul-bitova u bloku prilagođava obrnuto proporcionalno prosječnom vremenu mreže svakih 2016 stranica (što je okvirno 2 tjedna). Svaki rudar taj broj može nezavisno izračunati te prilagoditi svoj ciljani broj vodećih nul-bitova koje traži. Na taj je način osigurano približno konstantno vrijeme stranice.
 
 \section{Suglasje}
-Prijenos valute u Bitcoin mreži provodi se kroz takozvane nepotrošene izlaze transakcija\footnotemark. Svaki nepotrošeni izlaz transakcija asociran je s jednim vlasnikom (kriptografskim javnim ključem) te ga može samo vlasnik odgovarajućeg privatnog ključa poslati na neku drugu adresu. Prilikom toga, nepotrošeni izlaz može biti raspoređen na više odredišta. Stoga, ako pošiljatelj ne želi poslati cijeli iznos nepotrošenog izlaza transakcije, svoju adresu mora navesti kao odredišnu za ostatak iznosa koji nije poslan primatelju.
+Prijenos valute u Bitcoin mreži provodi se kroz takozvane nepotrošene izlaze transakcija \footnotemark. Svaki nepotrošeni izlaz transakcija asociran je s jednim vlasnikom (kriptografskim javnim ključem) te ga može samo vlasnik odgovarajućeg privatnog ključa poslati na neku drugu adresu. Prilikom toga, nepotrošeni izlaz može biti raspoređen na više odredišta. Stoga, ako pošiljatelj ne želi poslati cijeli iznos nepotrošenog izlaza transakcije, svoju adresu mora navesti kao odredišnu za ostatak iznosa koji nije poslan primatelju.
 \footnotetext{\textit{Unspent Transaction Output} (UTXO) je zapis koji uz sebe ima asocirane ulaze odnosno količine uplaćenog novca s jedne ili više adresa te dva izlaza koji određuju odredišne adrese. Dva izlaza služe slanju samo dijela sredstava na neku drugu adresu a ostatak usmjeriti natrag na vlastitu. Skup svih nepotrošenih izlaza transakcija je valuta u cirkulaciji i njega prati svaki rudar u mreži.}
 
 Rudari moraju imati bazu podataka nepotrošenih izlaza transakcija te pri upitima za dodavanje novih transakcija na stranicu, čvorovi im uz strukturu transakcije moraju poslati i svoj javni ključ kako bi oni mogli provjeriti njezinu ispravnost \footnotemark. Službena propozicija Bitcoina ne specificira implementaciju takvih baza podataka, no teži se korištenju što bolje optimiziranih struktura podataka (npr. indeksiranja) lanca kako bi rudari ostali kompetitivni s ostatkom mreže uz što manje nepotrebnog računanja. Također postoje i čvorovi koji nude samo uslugu pretraživanja baze ili ogledala (engl. \textit{mirroring}) te čuvaju povijest svih provedenih transakcija u mreži. Primjerice, najpopularnija implementacija baze podataka za Bitcoin čvor koristi LevelDB bazu podataka koja nudi brzi pristup disku u strukturi polja raspršenog adresiranja.
@@ -223,20 +234,20 @@ Rudari moraju imati bazu podataka nepotrošenih izlaza transakcija te pri upitim
 
 
 \subsection{Dokaz rada}
-Dokaz rada je osmišljen kako bi se zlonamjernim čvorovima onemogućilo razglašavanje pogrešne informacije o stanju mreže (primjer: razglase da imaju više Bitcoina u svom vlasništvu ili više puta potroše iste Bitcoine koje posjeduju). Dokaz rada fizički onemogućava takve pokušaje prevare zato što bi za takvo što napadač morao imati većinu računalne snage u mreži što svakako nije moguće. Međutim centralizacija je i dalje velik problem u Bitcoinu jer kompanije s najjačom opremom imaju najveće izglede za pronaći sažetak sljedećeg bloka \cite{9160462}. Poticaj rudarima da obavljaju taj zahtjevan posao je činjenica da će prema dogovoru specifikacije biti nagrađeni određenim iznosom kriptovalute\footnotemark
+Dokaz rada je osmišljen kako bi se zlonamjernim čvorovima onemogućilo razglašavanje pogrešne informacije o stanju mreže (primjeri: razglašavanje lanca u kojem je zapisano da napadač ima više Bitcoina u svom vlasništvu (falsifikacija) ili više puta potroše iste Bitcoine koje posjeduju na različitim ograncima izvornog lanca). Dokaz rada fizički onemogućava takve pokušaje prevare zato što bi za takvo što napadač morao imati većinu računalne snage u mreži što svakako nije moguće. Međutim centralizacija je i dalje velik problem u Bitcoinu jer kompanije s najjačom opremom imaju najveće izglede za pronaći sažetak sljedećeg bloka \cite{9160462}. Poticaj rudarima da obavljaju taj zahtjevan posao je činjenica da će prema dogovoru specifikacije biti nagrađeni određenim iznosom kriptovalute \footnotemark
 \footnotetext{\textit{Block reward} --- vidi \ref{block_reward}}
-Kako bi rudari imali interesa uopće uključivati transakcije i graditi Merkleova stabla, biti će dodatno nagrađeni i od svake obrađene transakcije prema informaciji koju je izdavatelj odredio. Zato su transakcije organizirane u prioritetni red --- rudarima se više isplati prvo obrađivati transakcije sa višom naknadom te će one prije biti potvrđene. Moguć je scenarij da transakcije nikada ne budu uključene na popis stranice jer naprosto imaju prenisku naknadu, a ispred nje u red prevelikom brzinom dolaze nove transakcije. Međutim, ne možemo biti sigurni da nikada neće biti potvrđena transakcija sa niskom naknadom. Mehanizam otkazivanja transakcija ne postoji te je velik rizik ostaviti ju u prioritetnom redu rudara. Novac se može \say{spasiti} dvostrukom potrošnjom\footnotemark na drugi vlastiti račun uz znatno višu naknadu kako bi bila potvrđena prije navedene \textit{"spore"} transakcije.
-\footnotetext{\textit{Double spending} je pojava kada napravimo transakciju (ili sumu transakcija) većeg iznosa no što posjedujemo. Nakon validiranja transakcija za koje imamo dovoljan iznos novaca, doći će na red naša stara transakcija te verifikacija neće uspijeti jer je \textit{TxOut} već potrošen. Rudari takve upite odbacuju.}
+Kako bi rudari imali interesa uopće uključivati transakcije i graditi Merkleova stabla, biti će dodatno nagrađeni i od svake obrađene transakcije prema informaciji koju je izdavatelj odredio. Zato su transakcije organizirane u prioritetni red --- rudarima se više isplati prvo obrađivati transakcije sa višom naknadom te će one prije biti potvrđene. Moguć je scenarij da transakcije nikada ne budu uključene na popis stranice jer naprosto imaju prenisku naknadu, a ispred nje u red prevelikom brzinom dolaze nove transakcije. Međutim, i dalje postoji niska vjerojatnost da  će transakcija sa niskom naknadom biti potvrđena. Mehanizam otkazivanja transakcija ne postoji te je velik rizik ostaviti ju u prioritetnom redu rudara. Novac se može \say{spasiti} dvostrukom potrošnjom \footnotemark na drugi vlastiti račun uz znatno višu naknadu kako bi bila potvrđena prije navedene \textit{"spore"} transakcije.
+\footnotetext{\textit{Double spending} je pojava kada se izvrši transakcija (ili suma iznosa više transakcija) većeg iznosa no što subjekt posjeduje. Nakon validiranja transakcija za koje ima dovoljan iznos novaca, doći će na red \textit{"stara"} transakcija te verifikacija neće uspijeti jer je \textit{TxOut} već potrošen. Rudari takve upite odbacuju.}
 
 \subsubsection{Negativne strane dokaza rada}
-U teoretskom napadu\footnotemark od 51 \% snage radi se upravo o tome da grupa koordiniranih zlonamjernih čvorova može blokirati ostale rudare od natjecanja za sljedeću stranicu. Kada bi se našla takva hipotetska organizacija, ništa ju ne bi moglo zaustaviti i ne postoji pravi način da se mreža zaštiti od takvog napada. Oni bi mogli generirati prazne stranice (što je potpuno legalno) te ih periodički propuštati ostatku mreže kako bi odustali od svojeg uzaludnog rada. Sav rad poštenih čvorova u mreži bio bi uzaludan i stranice bi bile važeće i prazne. Ovaj se napad najčešće zanemaruje zbog neizglednosti da će jedna organizacija ikad imati procesorsku većinu. Međutim, statistike pokazuju drugačije - distribucija računalne snage između koordiniranih rudarskih bazena vrlo je segregirana i postoji stvarna prijetnja od ovakvog napada. Mreža nije toliko decentralizirana koliko je bilo planirano. Uzrok takve podjele u računalnoj snazi leži u specijaliziranom sklopovlju koje koristi sklopove (FPGA, ASIC) za računanje SHA-256 sažetaka nekoliko redova veličine brže no što to mogu grafičke kartice u klasičnom računalu. SHA-256 je bio dizajniran da bude brz jer mu primarna namijena nije bila osiguravanje lanca stranica.
+U teoretskom napadu \footnotemark od 51 \% snage radi se upravo o tome da grupa koordiniranih zlonamjernih čvorova može blokirati ostale rudare od natjecanja za sljedeću stranicu. Kada bi se našla takva hipotetska organizacija, ništa ju ne bi moglo zaustaviti i ne postoji pravi način da se mreža zaštiti od takvog napada. Oni bi mogli stvarati prazne stranice (što je potpuno legalno) te ih periodički propuštati ostatku mreže kako bi odustali od svojeg uzaludnog rada. Sav rad poštenih čvorova u mreži bio bi uzaludan i stranice bi bile važeće i prazne. Ovaj se napad najčešće zanemaruje zbog neizglednosti da će jedna organizacija ikad imati procesorsku većinu. Međutim, statistike pokazuju drugačije - distribucija računalne snage između koordiniranih rudarskih bazena vrlo je segregirana i postoji stvarna prijetnja od ovakvog napada. Mreža nije toliko decentralizirana koliko je bilo planirano. Uzrok takve podjele u računalnoj snazi leži u specijaliziranom sklopovlju koje koristi sklopove (FPGA, ASIC) za računanje SHA-256 sažetaka nekoliko redova veličine brže no što to mogu grafičke kartice u klasičnom računalu. SHA-256 je bio dizajniran da bude brz jer mu primarna namijena nije bila osiguravanje lanca stranica.
 
-U novijim se lancima stranica teži korištenju kriptografskih funkcija sažetaka za koje je vrlo teško napraviti efikasno specijalizirano sklopovlje koje bi bilo značajno bolje od računala opće namjene. Kao primjer takve kriptografske funkcije valja spomenuti familiju Keccak (NIST-ov SHA-3 standard) koji je baziran na spužvastoj konstrukciji koje i vrlo ga je teško paralelizirati specijaliziranim sklopovljem (vrlo niska prednost nad računalima opće namijene). (TODO!!!)
+U novijim se lancima stranica teži korištenju \textit{future-proof} kriptografskih funkcija sažetaka u slučaju da SHA-2 standard bude \say{probijen} kao što se to dogodilo sa SHA-1 (iskorištenjem nekih slabosti u implementaciji u kombinaciji sa velikim brojem grafičkih procesorskih jedinica, grupa istraživača u Googleu je uspješno pronašla ciljanu koliziju između dvije PDF datoteke). Kao kandidata valja spomenuti familiju Keccak (pobjednik NIST-ovog natječaja za SHA-3 standard) koji je baziran na potpuno drugačijoj spužvastoj konstrukciji (umjesto Merkle–Damgård).
 
 Također, mreže koje koriste dokaz rada imaju \textbf{problem skaliranja}. Naime, distribuirana baza podataka ograničena je na propusnost pisanja jednaku prosječnom čvoru. Kako bi lanac stranica bio izvediv kao sustav elektroničkog novca na globalnoj razini, trebao bi imati vrlo visoku propusnost pri obradi transakcija.
 
 \subsection{Dokaz uloga}
-Zbog niske ekonomičnosti dokaza rada, velikog opterećenja računalnih sustava, a posljedično i iznimno velike potrošnje električne energije, javila se nova metoda postizanja suglasja u mrežama bez dokaza rada: dokaz uloga. Idejno radi tako da se čvorovi validatori u mreži kandidiraju te uz vjerojatnost proporcionalnu njihovom ulogu u pametnom ugovoru, bivaju izabrani da validiraju sljedeću stranicu i time dobivaju nagradu. Pri pokušajima varanja ili neispravnoj validaciji čvor bi trebao biti kažnjen prema suglasju mreže tako da mu se velik dio njegovog uloga oduzme što napade čini vrlo nepraktičnima. Sada se problem 51 \% računalne snage prebacuje na problem većine sredstava što lanac čini znatno decentraliziranijim i otpornijim.
+Zbog niske ekonomičnosti dokaza rada, velikog opterećenja računalnih sustava, a posljedično i iznimno velike potrošnje električne energije, javila se nova metoda postizanja suglasja u mrežama bez dokaza rada: dokaz uloga. Čvorovi validatori se kandidiraju u takozvanim komitetima (engl. \textit{committee}) te uz vjerojatnost proporcionalnu njihovom ulogu, bivaju izabrani da validiraju sljedeću stranicu i time dobivaju nagradu. Suglasje oko slučajnog odabira člana se postiže  Kako bi se mogli kandidirati, validatori dokazuju svoju kompetenciju pologom. Pri pokušajima varanja ili neispravnoj validaciji čvor bi trebao biti kažnjen prema suglasju mreže tako da mu se velik dio njegovog uloga oduzme što napade čini vrlo nepraktičnima. Sada se problem 51 \% računalne snage prebacuje na problem većine sredstava što lanac čini znatno decentraliziranijim i otpornijim.
 
 Primjerice, \textit{Ouroboros} \cite{ouroboros} je protokol razvijen za potrebe dokaza uloga korišten u Cardano (ADA) kriptovaluti je kriptovaluta koja se od svog početka oslanja na ovakav način rada, a Ethereum (ETH) unatoč tome što se trenutno oslanja na dokaz rada, ima eksponencijalno povećanje težine svakih 100.000 stranica kako bi potaknuo što bržu tranziciju mreže na dokaz uloga. \cite{wood2014ethereum}.
 
@@ -248,7 +259,7 @@ Ovakvo suglasje ima znatno veću brzinu obrade transakcija jer nije potrebno tro
 Zamislimo sustav koji ima \textbf{n} komponenata, od kojih je \textbf{t} nepouzdano te se komunikacija odvija u dvosmjernim kanalima između dviju točaka. Koliko iznosi minimalni \textbf{n} kako bi se uspostavilo suglasje oko odgovora u sustavu?
 \end{problem}
 
-Leisle Lamport \cite{lamport1982the} je dokazao da je to moguće postići s $3 \cdot t + 1$ čvorova. Treba $\frac{2}{3}$ potvrda ispravnih čvorova kako bismo postigli suglasje.
+Leisle Lamport \cite{lamport1982the} dokazao je da je to moguće postići s $3 \cdot t + 1$ čvorova. Treba $\frac{2}{3}$ potvrda ispravnih čvorova kako bi se postiglo suglasje.
 Nekoliko je znanstvenika predložilo rješenje u sljedeća tri koraka:
 \begin{itemize}
     \item \textit{pre-prepare}
@@ -265,35 +276,39 @@ Nekoliko je znanstvenika predložilo rješenje u sljedeća tri koraka:
     \end{itemize}
 \end{itemize}
 
-1999. simulirana je poboljšana praktična verzija (PBFT) \cite{castro1999practical} dokaza uloga koja rješava problem zagušenja mreže od previše razmijenjenih poruka između komponenata.
-\section{Pametni ugovor}
-Transakcija kao trajni zapis u Bitcoin mreži obična je informacija. Spomenuli smo također i naziv tvrdnja kao općenitiji naziv za podatke koje možemo zapisati u lanac stranica. Mreža Ethereum ima poopćeno shvaćanje pojma transakcije. Naime, moguće je da transakcije sadrže bilo kakve podatke te se na toj ideji zasniva pametan ugovor. Pametan ugovor je naziv za posebnu transakciju koja odredišnu adresu ima postavljenu na \textit{null} te u tijelu sadrži računalne instrukcije koje se mogu koristiti za izvršavanje algoritama u izoliranom okruženju \textit{Ethereum virtual machine}. To je znatno moćniji koncept od običnih trajnih zapisa koje nudi Bitcoin. Pametni se ugovori stvaraju u programskom jeziku Solidity te se prevode u \textit{bytecode} koji se zapisuje na lanac stranica \cite{wood2014ethereum}. Optimizacija kôda pri prevođenju je vrlo važna zbog visoke cijene usluge pohrane ugovora na lanac stranica. Programeri teže što manjem konačnom broju instrukcija. Sigurnosni problemi za rudare su eliminirani jer virtualna mašina nije integrirana sa sustavom domaćina (izvodi se u pješčaniku poput \textit{Javascripta} u \textit{web} pregledniku). Svaki ugovor ima svoju adresu i opcionalno definira vanjsko sučelje s kojim drugi aktori mreže mogu razmjenjivati poruke. Svi se ugovori nalaze u dijeljenom virtualnom adresnom prostoru mreže i njihovi implementacijski detalji javno su vidljivi. Rudari alociraju resurse na svojim računalima kako bi mogli izvoditi pametne ugovore u virtualnim strojevima. Beskonačne petlje i slične maliciozne pojave sprečavaju se tako da stvaratelj ugovora mora platiti cijenu proporcionalnu broju instrukcija koji bi se trebao izvesti u ugovoru (engl. \textit{gas limit}). Kada se potroši sav iznos, rudari prestaju izvoditi pametni ugovor.
+2006. simulirana je poboljšana praktična verzija koja koristi hibridni kvorum protokol \cite{hqbft} koji rješava problem zagušenja mreže zbog previše razmijenjenih poruka između komponenata. Naime, za svaku razmjenjenu poruku, sustav mora razmijeniti kvadratni broj poruka s obzirom na broj čvorova u njemu kako bi se postigao konsenzus. U alternativnoj verziji, svaki čvor mora obraditi samo linearan broj poruka s obzirom na broj čvorova.
 
-Ogromna moć koju nam nude pametni ugovori je garancija budućih događaja na lancu. Oni su supstitucija za posrednička tijela poput javnog bilježništva u suvremenim sustavima. Nema potrebe za povjerenjem jer ugovor se ne može otkazati i njegovo je izvođenje predvidivo. Postoje dvije vrste novčanika u mreži: vanjski (engl. \textit{external account}) i ugovorni novčanici (engl. \textit{contract account}) kojima upravlja kod pametnog ugovora. Iz tog je razloga moguće napraviti autonomne aplikacije na pametnim ugovorima koje obavljaju složene zadatke raspodjele novca. Ethereum već ima veliki ekosustav distribuiranih aplikacija (engl. \textit{ĐApp}) izgrađenih na pametnim ugovorima. To je razlog zašto se češće koristi naziv platforma umjesto kriptovalute.
+\section{Pametni ugovor}
+Transakcija kao trajni zapis u Bitcoin mreži obična je informacija. U radu se također spominje i naziv tvrdnja kao općenitiji naziv za podatke koji se mogu zapisati u lanac stranica. Mreža Ethereum ima poopćeno shvaćanje pojma transakcije. Naime, moguće je da transakcije sadrže bilo kakve podatke te se na toj ideji zasniva pametan ugovor. Pametan ugovor je naziv za posebnu transakciju koja odredišnu adresu ima postavljenu na \textit{null} te u tijelu sadrži računalne instrukcije koje se mogu koristiti za izvršavanje algoritama u izoliranom okruženju \textit{Ethereum virtual machine}. To je znatno moćniji koncept od običnih trajnih zapisa koje nudi Bitcoin. Pametni se ugovori stvaraju u programskom jeziku Solidity te se prevode u \textit{bytecode} koji se zapisuje na lanac stranica \cite{wood2014ethereum}. Optimizacija kôda pri prevođenju je vrlo važna zbog visoke cijene usluge pohrane ugovora na lanac stranica. Programeri teže što manjem konačnom broju instrukcija. Sigurnosni problemi za rudare su eliminirani jer virtualna mašina nije integrirana sa sustavom domaćina (izvodi se u pješčaniku poput \textit{Javascripta} u \textit{web} pregledniku). Svaki ugovor ima svoju adresu i opcionalno definira vanjsko sučelje s kojim drugi aktori mreže mogu razmjenjivati poruke. Svi se ugovori nalaze u dijeljenom virtualnom adresnom prostoru mreže i njihovi implementacijski detalji javno su vidljivi. Rudari alociraju resurse na svojim računalima kako bi mogli izvoditi pametne ugovore u virtualnim strojevima. Beskonačne petlje i slične maliciozne pojave sprečavaju se tako da stvaratelj ugovora mora platiti cijenu proporcionalnu broju instrukcija koji bi se trebao izvesti u ugovoru (engl. \textit{gas limit}). Kada se potroši sav iznos, rudari prestaju izvoditi pametni ugovor.
+
+Iznimna fleksibilnost koju nude pametni ugovori jest zakazivanje budućih \textbf{događaja} na lancu. Oni su supstitucija za posrednička tijela poput javnog bilježništva u suvremenim sustavima. Nema potrebe za povjerenjem jer ugovor nije otkaziv i njegovo je izvođenje provjerljivo. Postoje dvije vrste novčanika u mreži: vanjski (engl. \textit{external account}) i ugovorni novčanici (engl. \textit{contract account}) kojima upravlja kod pametnog ugovora. Iz tog je razloga moguće napraviti autonomne aplikacije na pametnim ugovorima koje obavljaju proizvoljno složene raspodjele novca. Ethereum već ima veliki ekosustav distribuiranih aplikacija (engl. \textit{ĐApp}) izgrađenih na pametnim ugovorima. To je razlog zašto se češće koristi naziv platforma umjesto kriptovalute.
 
 % Premijestil sam ovo tu jer objašnjavam od jednostavnihih koncepti prema složenijima.
-\section{Pogreške (popraviti)}
-Čvorovi mreže moraju biti u suglasju oko stanja sustava kako bi mogli donositi odluke o svojim budućim akcijama. Dakle, moraju svi dijeliti isti lanac stranica. To se postiže odbacivanjem svih drugih lanaca osim autoritativnog. Odluka o tome koji je lanac autoritativan donosi se na temelju većine računalne moći iz čega sljedi i najdulji lanac. Ako u bilo kojem trenutku nastanu dvije nove stranice te se propagiraju mrežom (to se naziva račvanje lanca --- \textit{forking}), jedna od njih će imati većinu rudarske snage. Prije no što se ispostavi koja je ispravna, one su jednakovrijedne i upravo zbog toga se privremeno ne vjeruje posljednjoj stranici u lancu. Vjerojatnost za takvu neizvjesnost u lancu je vrlo niska te opada eksponencijalnom brzinom ukoliko napadač posjeduje manjinu snage u mreži \cite{nakamoto2012bitcoin}. Račvanje u lancima stranica može se dogoditi i promjenom u protokolu te čvorovi koji naprave tranziciju na novu verziju mogu završiti na odvojenom lancu koji efektivno postaje nova kriptovaluta. Taj se proces naziva tvrdo račvanje (engl. \textit{hard fork}) i dogodio se primjerice između Bitcoina i Bitcoin Classic.
+\section{Pogreške}
+Čvorovi mreže moraju biti u suglasju oko stanja sustava kako bi mogli donositi odluke o svojim budućim akcijama. Dakle, moraju svi dijeliti isti lanac stranica. To se postiže odbacivanjem svih drugih lanaca osim autoritativnog. Odluka o tome koji je lanac autoritativan donosi se na temelju duljine lanca što direktno povlači i najveći udio računalne moći uložen u njegovu \textit{"izgradnju"}. Ako u bilo kojem trenutku nastanu dvije nove stranice te se propagiraju mrežom (to se naziva račvanje lanca --- \textit{forking}), jedna od njih će imati većinu rudarske snage. Prije no što se ispostavi koja je ispravna, one su jednakovrijedne i upravo zbog toga se privremeno ne vjeruje posljednjoj stranici u lancu. Vjerojatnost za takvu neizvjesnost u lancu je vrlo niska te opada eksponencijalno opada ako napadač posjeduje manjinu snage u mreži \cite{nakamoto2012bitcoin}. Račvanje u lancima stranica može se dogoditi i promjenom u protokolu te čvorovi koji naprave tranziciju na novu verziju mogu završiti na odvojenom lancu koji efektivno postaje nova kriptovaluta. Taj se proces naziva tvrdo račvanje (engl. \textit{hard fork}) i dogodio se primjerice između Bitcoina i Bitcoin Classic.
 
 % =========================
 \chapter{Simulacija postizanja suglasja}
 
-U ovom ćemo poglavlju objasniti izradu programske podrške za simulaciju postizanja konsenzusa u lancu stranica u mreži s više sudionika. Suglasje protokola bit će da je najdulji ispravni lanac autoritativan.
+U ovom je poglavlju objašnjena izrada programske podrške za simulaciju postizanja suglasja u lancu stranica u mreži s više sudionika. Suglasje protokola postiže se na isti način kao i u Bitcoin mreži --- najdulji ispravni lanac je autoritativan. Lanac je ispravan ako su sve transakcije u njemu ispravne te je rudarenje izvršeno odgovarajućom težinom sažetka, a transakcija se smatra ispravnom ako je digitalni potpis ispravan.
 
 \section{Opis}
 Implementacija je ostvarena u programskim jezicima Python i Javascript. Sastoji se od dva dijela:
 \begin{enumerate}
-    \item \textit{Backenda} čvora koji je zapravo poslužitelj s kojim komuniciramo HTTP protokolom preko REST metoda. Poslužitelj je napisan u radnom okviru Flask. Aplikacija brine o generiranju ključeva za čvor i njihovog korištenja kod potpisivanja podataka. Za ostvarenje spremišta ključeva, korištene su kriptografske primitive iz knjižnice PyCryptodome.
+    \item \textit{Backenda} čvora koji je zapravo poslužitelj s kojim komuniciramo HTTP protokolom preko REST metoda. Poslužitelj je napisan u radnom okviru Flask. Aplikacija brine o stvaranju ključeva za čvor i njihovog korištenja kod potpisivanja podataka. Za ostvarenje spremišta ključeva, korištene su kriptografske primitive iz knjižnice \textit{PyCryptodome}.
 \end{enumerate}
-Drugi dio implementacije sastoji se od \textit{frontend} klijenta kojemu pristupamo kroz \textit{web} preglednik. Naravno, korišten je programski jezik Javascript bez dodatnih knjižnica. Korišten je standardni asinkroni API zasnovan na obećanjima i \texttt{fetch} upitima koji će pozivati Flask \textit{backend} našeg čvora. Zajedno ta dva dijela čine jedan čvor u mreži. Programsku podršku možemo instalirati na više računala te simulirati njihovu međusobnu interakciju: postizanje suglasja i vršenje transakcija. Serijalizacijski format korišten za komunikaciju je JSON i sve poruke u sustavu prenose se u tekstualnom obliku (za razliku od Bitcoinovog binarnog protokola).
+Drugi dio implementacije sastoji se od \textit{frontend} klijenta kojemu pristupamo kroz \textit{web} preglednik. Naravno, korišten je programski jezik Javascript bez dodatnih knjižnica. Korišten je standardni asinkroni API zasnovan na obećanjima i \texttt{fetch} upitima koji će pozivati Flask \textit{backend} našeg čvora. Zajedno ta dva dijela čine jedan čvor u mreži. Programska se podrška može instalirati na više računala te simulirati njihova međusobna interakcija --- postizanje suglasja i vršenje transakcija. Serijalizacijski format korišten za komunikaciju je JSON i sve poruke u sustavu prenose se u tekstualnom obliku (za razliku od Bitcoinovog binarnog protokola).
 
 \section{Izrada transakcija}
 
 \subsection{Adrese}
-Adrese digitalnih novčanika u ovoj se simulaciji izračunavaju kao SHA-256 sažetak javnog ključa čvora nakon njihove serijalizacije u PEM format (ASCII kodiranu DER strukturu javnog ključa). Adresa kao sažetak javnog ključa uobičajena je praksa u popularnim implementacijama lanca stranica.
+Adrese digitalnih novčanika u ovoj se simulaciji izračunavaju kao SHA-256 sažetak javnog ključa čvora nakon njihove serijalizacije u PEM format (ASCII kodiranu DER strukturu javnog ključa). Adresa kao sažetak javnog ključa uobičajena je praksa u popularnim programskim ostvarenjima lanca stranica.
 
 \subsection{Struktura transakcije}
-Transakciju na vrlo jednostavan način stvaramo u \textit{web} pregledniku tako da unesemo odredišnu adresu i iznos koji želimo poslati na tu adresu. Tijelo upita u implementaciji formatirano je na sljedeći način:
+\setminted{fontsize=\small,baselinestretch=0.9}
+
+Transakciju se vrlo jednostavan način stvara u \textit{web} pregledniku unosom odredišne adrese i iznosa koji željenog iznosa koji će biti poslan na tu adresu. Tijelo upita u implementaciji formatirano je na sljedeći način:
+\begin{figure}[H]
 \begin{minted}[obeytabs=true,tabsize=4,frame=single,framesep=10pt]{json}
 {
 	"data": {
@@ -306,24 +321,27 @@ Transakciju na vrlo jednostavan način stvaramo u \textit{web} pregledniku tako 
 	"signature": "<heksadekadski_potpis_pošiljatelja>"
 }
 \end{minted}
+\caption{Primjer transakcije korištene u aplikaciji u JSON formatu}
+    \label{fig:img_txn}
+\end{figure}
 
-Slanje čvoru (poslužitelju/rudaru) upit za stavljanje nove transakcije u bazen nepotvrđenih transakcija te njihova konačna potvrda. Poslužitelj će provodi striktnu validaciju kako bi utvrdio je li transakcija ispravno strukturirana:
+Slanje čvoru (poslužitelju/rudaru) upit za stavljanje nove transakcije u bazen nepotvrđenih transakcija te njihova konačna potvrda. Poslužitelj će provesti striktnu validaciju kako bi utvrdio je li transakcija ispravno strukturirana:
 
 \begin{enumerate}
-	\item mora sadržavati sva očekivana polja
-	\item mora biti jedinstvena (provjerava se kako nebi došlo do malicioznog \textit{replayja} valjanih transakcija)
-	\item mora imati valjani digitalni potpis (korištena je shema iz specifikacije FIPS-186-3)
-	\item sažetak javnog ključa mora odgovarati izvorišnoj adresi
-	\item provjeravaju se povijesne transakcije izvorišne adrese da se ustvrdi ima li dovoljno sredstava da obavi transakciju koju želi
+	\item mora sadržavati sva očekivana polja;
+	\item mora biti jedinstvena (provjerava se kako nebi došlo do malicioznog \textit{replayja} valjanih transakcija);
+	\item mora imati valjani digitalni potpis (korištena je shema iz specifikacije FIPS-186-3);
+	\item sažetak javnog ključa mora odgovarati izvorišnoj adresi;
+	\item provjeravaju se povijesne transakcije izvorišne adrese da se ustvrdi ima li dovoljno sredstava da obavi transakciju koju želi.
 \end{enumerate}
 
-\section{Implementacija dokaza rada}
-U svrhu pojednostavljenja sustava, nije implementiran mehanizam adaptivne težine mreže već je postavljena konstantna težina od jednog vodećeg nul-okteta. Rudar inkrementalno traži broj (engl. \textit{nonce}) koji sa sažetkom opisnika stranice zadovoljava taj kriterij. Vjerojatnost da je $k$-ti sažetak ispravan može se opisati običnom geometrijskom distribucijom:
+\section{Programsko ostvarenje dokaza rada}
+U svrhu pojednostavljenja sustava, nije implementiran mehanizam adaptivne težine mreže već je postavljena konstantna težina od jednog vodećeg nul-okteta. Rudar inkrementalno traži \textit{nonce} koji sa sažetkom opisnika stranice zadovoljava taj kriterij. Vjerojatnost da je $k$-ti sažetak ispravan može se opisati običnom geometrijskom distribucijom:
 $$
 P(X=k) = (1 - p) ^ {k-1} \cdot p \qquad \qquad x=0,1,2,\ldots \, .
 $$
 
-Uz pretpostavku da je kodomena funkcije prefiksa prvog okteta sažetka uniformno distribuirana po polju $\{0,1\} ^{8}$, očekivani broj pokušaja prije nego što pogodimo ispravan broj iznosi:
+Uz pretpostavku da je kodomena funkcije prefiksa prvog okteta sažetka uniformno distribuirana po polju $\{0,1\} ^{8}$, očekivani broj pokušaja prije nego što se slučajno pogodi ispravan broj iznosi:
 
 \begin{equation} \label{eq1}
 \begin{split}
@@ -332,9 +350,9 @@ E(X) &= \frac{1}{p} \qquad \qquad p = (\frac{1}{2}) ^ {8} = \frac{1}{256} \\
 \end{split}
 \end{equation}
 
-Najvažniji isječak kôda dokaza rada može se opisati sljedećim pseudokodom:
-
 \colorlet{gray}{gray!40}
+\begin{figure}[H]
+    \centering
 \begin{minted}[obeytabs=true,tabsize=4,frame=single,framesep=10pt]{python}
 last_nonce = last_block['nonce']
 last_hash = self.hash(last_block)
@@ -351,9 +369,48 @@ while True:
 		    sleep(to_sleep)
 
 \end{minted}
+    \caption{Najvažniji isječak iz kôda dokaza rada}
+    \label{fig:img_pow}
+\end{figure}
+
 Dodano je vremensko kašnjenje \textbf{isključivo} radi demonstracije da taj proces inače zna potrajati te zbog uloženog vremena i električne energije, rudar dobiva ugovorenu nagradu zajedno sa naknadama svake transakcije. Prosječno vrijeme stranice iznosi oko 2.5 sekunde.
 
-\section{Implementacija sinkronizacije čvorova}
+
+\section{Postizanje suglasja između više čvorova simulacije}
+Suglasje se u simulaciji postiže prihvaćanjem najduljeg ispravnog lanca. Stoga, prilikom sinkronizacije čvor će poslati HTTP upit svim susjednim čvorovima da mu pošalju svoje stanje lanca. Valja napomenuti kako se u praksi mrežom šalju samo novonastale promjene u lancu prilikom sinkronizacije (npr. zadnjih $ N $ blokova glave lanca) radi brzine i manjeg zagušenja mreže redundantnim podacima. Ključni dio algoritma sinkronizacije prikazan je u isječku kôda ispod:
+\begin{figure}[H]
+    \centering
+\begin{minted}[obeytabs=true,tabsize=4,frame=single,framesep=10pt]{python}
+def synchronize_with_network(self):
+    peers = self.nodes
+    new_chain = None
+    max_length = len(self.chain)
+    for node in peers:
+        response = None
+        try:
+            response = requests.get(f'http://{node}/chain')
+            response.raise_for_status()
+        except:
+            print(f'Peer {node} didn\'t respond')
+            pass
+
+        if response and response.status_code == 200:
+            length = response.json()['length']
+            chain = response.json()['chain']
+
+            if length > max_length and self.valid_chain(chain):
+                max_length = length
+                new_chain = chain
+
+    if new_chain:
+        self.chain = new_chain
+        return True
+
+    return False
+\end{minted}
+    \caption{Mehanizam sinkronizacije s ostatkom mreže HTTP upitima}
+    \label{fig:img_suglasje}
+\end{figure}
 
 \section{REST sučelje aplikacije}
 Kao što je spomenuto, aplikacija ima REST sučelje što znači da je moguće napraviti nezavisnog klijenta (čak i mobilnog) koji bi koristio čvor u mreži. Definirane su sljedeće metode za pregled i upravljanje stanjem čvora:
@@ -417,57 +474,22 @@ Kao što je spomenuto, aplikacija ima REST sučelje što znači da je moguće na
 	\end{itemize}
 \end{itemize}
 
-Pozivamo ih iz \textit{Javascripta} na \textit{frontendu} pomoću asinkronog \textit{fetch} sučelja. Nisu korištene dodatne vanjske knjižnice pri implementaciji. Na sličan se način mogu izgraditi i mobilni klijenti koji bi koristili rudarske čvorove u pozadini.
+Poziva ih se iz \textit{Javascripta} \textit{frontendu} pomoću asinkronog \textit{fetch} sučelja. Nisu korištene dodatne vanjske knjižnice pri implementaciji. Na sličan se način mogu izgraditi i mobilni klijenti koji bi koristili rudarske čvorove u pozadini.
+\newpage
 
-\section{Postizanje suglasja između više čvorova simulacije}
-Suglasje se u simulaciji postiže prihvaćanjem najduljeg ispravnog lanca. Stoga, prilikom sinkronizacije čvor će poslati HTTP upit svim susjednim čvorovima da mu pošalju svoje stanje lanca. Valja napomenuti kako se u praksi mrežom šalju samo novonastale promjene u lancu prilikom sinkronizacije (npr. zadnjih $ N $ blokova glave lanca) radi brzine i manjeg zagušenja mreže redundantnim podacima. Ključni dio algoritma sinkronizacije prikazan je u isječku kôda ispod:
+\section{Sučelje}
+Uporaba korisničkog sučelja demonstrirana je kroz tri nezavisne instance programa. Svaki je pokrenut u svom Python okruženju slušajući upite na vlastitim vratima.
 
-\begin{minted}[obeytabs=true,tabsize=4,frame=single,framesep=10pt]{python}
-def synchronize_with_network(self):
-
-    peers = self.nodes
-    new_chain = None
-
-    max_length = len(self.chain)
-
-    for node in peers:
-        response = None
-        try:
-            response = requests.get(f'http://{node}/chain')
-            response.raise_for_status()
-        except:
-            print(f'Peer {node} didn\'t respond')
-            pass
-
-        if response and response.status_code == 200:
-            length = response.json()['length']
-            chain = response.json()['chain']
-
-            if length > max_length and self.valid_chain(chain):
-                max_length = length
-                new_chain = chain
-
-    if new_chain:
-        self.chain = new_chain
-        return True
-
-    return False
-\end{minted}
-
-\chapter{Korištenje korisničkog sučelja}
-Uporabu korisničkog sučelja demonstrirat ćemo na tri nezavisne instance programa. Svaki je pokrenut u svom Python okruženju slušajući upite na vlastitim vratima.
-
-Pristupajući čvoru sa \textit{web} preglednika, prezentirani smo sa jednostavnom \textit{web} stranicom koja predstavlja naš novčanik. Pri svakoj interakciji sa stražnjim dijelom aplikacije, kontinuirano se osvježavaju informacije o našem računu.
-
+Pristupajući čvoru sa \textit{web} preglednika, prezentira se jednostavno \textit{web} sučelje za upravljanje korisničkim novčanikom. Pri svakoj interakciji sa \textit{backendom} aplikacije, kontinuirano se osvježavaju informacije o subjektovom računu.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{sucelje}
+    \includegraphics[width=0.7\textwidth]{sucelje}
     \caption{Izgled korisničkog sučelja}
     \label{fig:sucelje}
 \end{figure}
-
-Klikom na gumb \keys{Mine}, šaljemo GET upit serveru čvora da pronađe \textit{nonce} za sljedeći blok koji ima pripremljen. Prva stranica koju pri pokretanju program automatski izrudari zove se \textit{genesis block}. Ona ima sažetak prethodnog bloka postavljen na \textit{null} te započinje novi lanac stranica.
-
+\newpage
+\section{Rudarenje}
+Klikom na gumb \keys{Mine}, šalje se GET upit poslužitelju čvora da pronađe \textit{nonce} za sljedeći blok koji ima pripremljen. Prva stranica koju pri pokretanju program automatski izrudari zove se \textit{genesis block}. Ona ima sažetak prethodnog bloka postavljen na \textit{null} te započinje novi lanac stranica.
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{rudarenje}
@@ -475,8 +497,9 @@ Klikom na gumb \keys{Mine}, šaljemo GET upit serveru čvora da pronađe \textit
     \label{fig:rudarenje}
 \end{figure}
 
-Kako bismo svog klijenta povezali sa susjednim čvorovima, upisujemo njihove IP adrese (ili imena domena) na listu \textit{peers}. Naš će čvor čuvati tu listu te pri pozivu \keys{Sync} će se pokušati sinkronizirati sa čvorovima šaljući im upite i uspoređujući lance.
-
+\newpage
+\section{Povezivanje}
+Kako bi se s klijenta povezalo sa susjednim čvorovima, upisuju se njihove IP adrese (ili imena domena) na listu \textit{peers}. Korisnikov čvor čuva tu listu te pri pozivu \keys{Sync} se pokušava sinkronizirati sa čvorovima šaljući im upite i uspoređujući lance kandidate.
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{dodavanje_ip_adrese_susjeda.png}
@@ -484,8 +507,9 @@ Kako bismo svog klijenta povezali sa susjednim čvorovima, upisujemo njihove IP 
     \label{fig:dodaj_ip}
 \end{figure}
 
-Za provođenje nove transakcije, moramo samo navesti odredišnu adresu čvora, iznos koji želimo poslati tom čvoru i pritisnuti \keys{Execute}. Poslužitelj će provjeriti stanje lanca i format našeg upita i ukoliko prolazi sve provjere, dodati ga na listu još nepotvrđenih transakcija spremnih da budu izrudarene u sljedećoj stranici. Ponovnim klikom na \keys{Mine}, vidjet ćemo da se stanje našeg računa ažuriralo i transakcija je trajno zapisana na lanac stranica.
-
+\newpage
+\section{Slanje sredstava}
+Za provođenje nove transakcije, potrebno je samo navesti odredišnu adresu čvora, iznos koji se želi poslati tom čvoru i pritisnuti \keys{Execute}. Poslužitelj provjerava stanje lanca i format upita te ako prolazi sve provjere, dodaje ga na listu još nepotvrđenih transakcija spremnih da budu izrudarene u sljedećoj stranici. Ponovnim klikom na \keys{Mine}, vidljivo je ažurirano stanje računa subjekta i transakcija je trajno zapisana na lanacu stranica.
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{transakcija.png}
@@ -493,16 +517,18 @@ Za provođenje nove transakcije, moramo samo navesti odredišnu adresu čvora, i
     \label{fig:transakcija}
 \end{figure}
 
-Pogledajmo sada sustav iz perspektive primatelja. On još u svojem lancu nema nijedan blok jer ga nismo sinkronizirali s mrežom, no kada pritisnemo \keys{Sync}, povući će podatke sa prvog klijenta i osvježiti svoje stanje računa.
-
+\section{Primanje sredstava}
+Sljedeći postupak opisan je iz perspektive primatelja. On još u svojem lancu nema nijedan blok jer nije sinkroniziran s mrežom, no kada se pritisne \keys{Sync}, povući će se podaci sa prvog klijenta i osvježiti stanje računa primatelja.
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{sinkronizacija.png}
-    \caption{Sinkronizacija s početnim čvorom kako bismo vidjeli primljeni iznos}
+    \caption{Stanje računa nakon sinkronizacije s početnim čvorom}
     \label{fig:sinkronizacija}
 \end{figure}
 
-Možemo još nekoliku puta na jedno od klijenata pritisnuti \keys{Sync} kako bismo napravili dulji lanac na njemu. Zatim u programu trećeg klijenta dodamo 1. i 2. susjednog čvora. On će pri sinkronizaciji zatražiti informacije o lancima oba klijenta i prihvatiti najdulji važeći lanac kao autoritativan. Ukoliko bi čvor pokušao podmetnuti lanac sa nevaljanim digitalnim potpisima ili sažetcima stranica, verifikacija bi pala i ignorirali bismo lanac.
+\newpage
+\section{Sinkronizacija i postizanje suglasja}
+Može se još nekoliko puta na jednom od klijenata pritisnuti \keys{Sync} kako bi se napravio dulji lanac na njemu. Zatim se u programu trećeg klijenta trebaju dodati adrese 1. i 2. susjednog čvora. On će pri sinkronizaciji zatražiti informacije o lancima oba klijenta i prihvatiti \textbf{najdulji važeći} lanac kao autoritativan. Ako bi čvor pokušao podmetnuti lanac sa nevaljanim digitalnim potpisima transakcija ili sažetcima stranica, verifikacija bi pala i ignorirao bi se razglašeni lanac.
 
 \begin{figure}[H]
     \centering
@@ -513,16 +539,14 @@ Možemo još nekoliku puta na jedno od klijenata pritisnuti \keys{Sync} kako bis
 
 % =========================
 \chapter{Zaključak}
-Budućnost elektroničkog novca je otvoren problem koji nema ispravnog i neispravnog rješenja. Imamo brojne obećavajuće radne okvire zasnivane na lancima stranica, prototipove i sustave u pogonu koji demonstriraju neke od potencijalnih smjerova u kojima ljudska ekonomija može otići. Lanac stranica nam nudi svježi pogled na problem upravljanja novcem, a u kombinaciji s pametnim ugovorima i linearnim skaliranjem dokaza uloga, ima potencijal da preuzme ulogu univerzalnog sustava novca. Živimo u vremenu kad je ova tehnologija u svom začetku. Prva ideja lanca stranica pojavila se 1991. kako bi 2009. prvi put ušla u praktičnu primjenu sa Bitcoin mrežom, a 2015. se javili ozbiljni konkurenti poput platforme Ethereum koji proširuje i revolucionarizira tu osnovnu ideju lanca stranica.
-
-(TODO: dopuniti)
+Budućnost elektroničkog novca je otvoren problem koji nema ispravnog i neispravnog rješenja. Imamo brojne obećavajuće radne okvire zasnivane na lancima stranica, prototipove i sustave u pogonu koji demonstriraju neke od potencijalnih smjerova u kojima ljudska ekonomija može otići. Lanac stranica nam nudi svježi pogled na problem upravljanja novcem, a u kombinaciji s pametnim ugovorima i linearnim skaliranjem dokaza uloga, ima potencijal da preuzme ulogu univerzalnog sustava novca. Živimo u vremenu kad je ova tehnologija u svom začetku. Jedna od prvih ideja nalik lancu stranica pojavila se 1991. (Haber i Stornett \textit{timestamping service} \cite{enwiki:1016411321}), kako bi 2009. prvi put zaživio zajedno s konceptom dokaza rada i ušao u praktičnu primjenu s Bitcoin mrežom. 2015. počeli su se javljati ozbiljni konkurenti poput platforme Ethereum koji proširuje i revolucionarizira tu osnovnu ideju pametnim ugovorima. Iskoraci u ovom području otvaraju vrata k rješenjima brojnih problema sigurnosti i skaliranja elektroničkog novca. Lanac stranica mogao bi postati budućnost trgovanja digitalnim sadržajem, sklapanja poslovnih i pravnih ugovora, razvoja aplikacija i pohranjivanja podataka u oblaku. Mogao bi se primijeniti u tvrtkama za osiguranje infrastrukture od ranjivosti, otpornosti na napade uskraćivanja usluga.
 
 \bibliographystyle{fer}
 \bibliography{literatura}
 
 
 \begin{sazetak}
-	Obrađujemo temu lanca stranica, simuliramo rad jednostavne kriptovalute te postizanje suglasja između više čvorova u mreži. Objasnit ćemo pojmove središnjeg autoriteta, suglasja u sustavima bez povjerenja, digitalnog potpisivanja, potvrđivanja transakcija i pametnih ugovora u sustavima lanca stranica.
+Obrađuje se tema lanca stranica, simulira se rad jednostavne kriptovalute te postizanja suglasja između više čvorova u mreži. Objašnjavaju se pojmovi središnjeg autoriteta, suglasja u sustavima bez povjerenja, digitalnog potpisivanja, potvrđivanja transakcija i pametnih ugovora u sustavima lanca stranica.
 
 \kljucnerijeci{Lanac stranica, distribuirano suglasje, digitalni potpis, elektronički novac, pametni ugovori}
 \end{sazetak}

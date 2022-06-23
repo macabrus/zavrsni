@@ -29,3 +29,92 @@
 	pages = "342--351"
 }
 
+@article{wood2014ethereum,
+     title={Ethereum: A secure decentralised generalised transaction ledger EIP-150 REVISION},
+     author={Wood, Gavin},
+}
+
+@misc{nakamoto2012bitcoin,
+  added-at = {2014-04-17T08:33:06.000+0200},
+  author = {Nakamoto, Satoshi},
+  biburl = {https://www.bibsonomy.org/bibtex/23db66df0fc9fa2b5033f096a901f1c36/ngnn},
+  interhash = {423c2cdff70ba0cd0bca55ebb164d770},
+  intrahash = {3db66df0fc9fa2b5033f096a901f1c36},
+  keywords = {imported},
+  timestamp = {2014-04-17T08:33:06.000+0200},
+  title = {Bitcoin: A peer-to-peer electronic cash system},
+  url = {http://www.bitcoin.org/bitcoin.pdf},
+  year = 2009
+}
+
+@misc{ enwiki:969028445,
+    author = "{Wikipedia contributors}",
+    title = "Central Authority --- {Wikipedia}{,} The Free Encyclopedia",
+    year = "2020",
+    url = "https://en.wikipedia.org/w/index.php?title=Central_Authority&oldid=969028445",
+    note = "[Online; accessed 21-May-2021]"
+  }
+
+@misc{ enwiki:1021608159,
+    author = "{Wikipedia contributors}",
+    title = "Society for Worldwide Interbank Financial Telecommunication --- {Wikipedia}{,} The Free Encyclopedia",
+    year = "2021",
+    url = "https://en.wikipedia.org/w/index.php?title=Society_for_Worldwide_Interbank_Financial_Telecommunication&oldid=1021608159",
+    note = "[Online; accessed 21-May-2021]"
+  }
+  
+  @INPROCEEDINGS{9160462,
+  author={Wang, Canhui and Chu, Xiaowen and Qin, Yang},
+  booktitle={2020 6th International Conference on Big Data Computing and Communications (BIGCOM)}, 
+  title={Measurement and Analysis of the Bitcoin Networks: A View from Mining Pools}, 
+  year={2020},
+  volume={},
+  number={},
+  pages={180-188},
+  doi={10.1109/BigCom51056.2020.00032}}
+
+@misc{ouroboros,
+    author = {Aggelos Kiayias and Alexander Russell and Bernardo David and Roman Oliynykov},
+    title = {Ouroboros: A Provably Secure Proof-of-Stake Blockchain Protocol},
+    howpublished = {Cryptology ePrint Archive, Report 2016/889},
+    year = {2016},
+    note = {\url{https://eprint.iacr.org/2016/889}},
+}
+
+@inproceedings{hqbft,
+author = {Cowling, James and Myers, Daniel and Liskov, Barbara and Rodrigues, Rodrigo and Shrira, Liuba},
+title = {HQ Replication: A Hybrid Quorum Protocol for Byzantine Fault Tolerance},
+year = {2006},
+isbn = {1931971471},
+publisher = {USENIX Association},
+address = {USA},
+abstract = {There are currently two approaches to providing Byzantine-fault-tolerant state machine replication: a replica-based approach, e.g., BFT, that uses communication between replicas to agree on a proposed ordering of requests, and a quorum-based approach, such as Q/U, in which clients contact replicas directly to optimistically execute operations. Both approaches have shortcomings: the quadratic cost of inter-replica communication is un-necessary when there is no contention, and Q/U requires a large number of replicas and performs poorly under contention.We present HQ, a hybrid Byzantine-fault-tolerant state machine replication protocol that overcomes these problems. HQ employs a lightweight quorum-based protocol when there is no contention, but uses BFT to resolve contention when it arises. Furthermore, HQ uses only 3f + 1 replicas to tolerate f faults, providing optimal resilience to node failures.We implemented a prototype of HQ, and we compare its performance to BFT and Q/U analytically and experimentally. Additionally, in this work we use a new implementation of BFT designed to scale as the number of faults increases. Our results show that both HQ and our new implementation of BFT scale as f increases; additionally our hybrid approach of using BFT to handle contention works well.},
+booktitle = {Proceedings of the 7th Symposium on Operating Systems Design and Implementation},
+pages = {177–190},
+numpages = {14},
+location = {Seattle, Washington},
+series = {OSDI '06}
+}
+
+@Article{lamport1982the,
+author = {Lamport, Leslie and Shostak, Robert and Pease, Marshall},
+title = {The Byzantine Generals Problem},
+year = {1982},
+month = {July},
+abstract = {I have long felt that, because it was posed as a cute problem about philosophers seated around a table, Dijkstra's dining philosopher's problem received much more attention than it deserves. (For example, it has probably received more attention in the theory community than the readers/writers problem, which illustrates the same principles and has much more practical importance.) I believed that the problem introduced in [41] was very important and deserved the attention of computer scientists. The popularity of the dining philosophers problem taught me that the best way to attract attention to a problem is to present it in terms of a story.
+
+There is a problem in distributed computing that is sometimes called the Chinese Generals Problem, in which two generals have to come to a common agreement on whether to attack or retreat, but can communicate only by sending messengers who might never arrive. I stole the idea of the generals and posed the problem in terms of a group of generals, some of whom may be traitors, who have to reach a common decision. I wanted to assign the generals a nationality that would not offend any readers. At the time, Albania was a completely closed society, and I felt it unlikely that there would be any Albanians around to object, so the original title of this paper was The Albanian Generals Problem. Jack Goldberg was smart enough to realize that there were Albanians in the world outside Albania, and Albania might not always be a black hole, so he suggested that I find another name. The obviously more appropriate Byzantine generals then occurred to me.
+
+The main reason for writing this paper was to assign the new name to the problem. But a new paper needed new results as well. I came up with a simpler way to describe the general 3n+1-processor algorithm. (Shostak's 4-processor algorithm was subtle but easy to understand; Pease's generalization was a remarkable tour de force.) We also added a generalization to networks that were not completely connected. (I don't remember whose work that was.) I also added some discussion of practical implementation details.},
+url = {https://www.microsoft.com/en-us/research/publication/byzantine-generals-problem/},
+pages = {382-401},
+journal = {ACM Transactions on Programming Languages and Systems},
+}
+
+@misc{ enwiki:1016411321,
+    author = "{Wikipedia contributors}",
+    title = "Linked timestamping --- {Wikipedia}{,} The Free Encyclopedia",
+    year = "2021",
+    url = "https://en.wikipedia.org/w/index.php?title=Linked_timestamping&oldid=1016411321",
+    note = "[Online; accessed 2-June-2021]"
+  }
